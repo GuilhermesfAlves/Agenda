@@ -13,6 +13,8 @@
  * que contem um int.
 */
 
+#ifndef LISTA_ORD
+#define LISTA_ORD
 /*
  * elemento_t possui o campo chave, quem sabe pode ter mais coisas depois
 */
@@ -59,3 +61,5 @@ int lista_insere_ordenado (lista_t *l, elemento_t *elemento);
  * Retorna 1 em caso de sucesso e 0 caso elemento nao esteja na Lista.
 */
 int lista_remove_ordenado (lista_t *l, elemento_t *elemento);
+
+#endif

@@ -15,6 +15,7 @@
 
 #include "lib_listaordenada.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 /*  Cria uma Lista vazia */
 lista_t *lista_cria (){
@@ -34,13 +35,15 @@ void lista_destroi (lista_t **l){
 
     lista = *l;
     aux = lista -> ini;
+    
     if (aux)
-        while (aux -> prox){
-            lista -> ini = lista -> ini -> prox;
+        do {
+            lista -> ini = lista -> ini -> prox; 
             free(aux -> elemento);
             free(aux);
-        }
-    free(lista -> ini);
+            aux = lista -> ini;
+        } while (aux);
+
     free(*l);
     *l = NULL;
 }
@@ -48,21 +51,55 @@ void lista_destroi (lista_t **l){
 /* Adiciona um elemento em ordem de acordo com o valor elemento->chave na Lista. 
  * Retorna 1 em caso de sucesso e 0 caso contrario.(erro de malloc) */
 int lista_insere_ordenado (lista_t *l, elemento_t *elemento){
-    nodo_t *aux;
+    nodo_t *aux, *novo;
+
+    if (!(novo = malloc(sizeof(nodo_t))))
+        return 0;
+
+    novo -> elemento = elemento;
 
     aux = l -> ini;
-    if (!aux){
-        aux -> elemento = elemento;
-        aux -> prox = NULL;
-        return 1;
+
+    if (aux)
+        printf("inicio: %d\n ", aux -> elemento -> chave);
+
+    if (!l -> ini){
+        novo -> prox = l -> ini;
+        l -> ini = novo;
     }
-    while ((aux -> prox) && (aux -> elemento < elemento)){
-        aux = aux -> prox;
+    else if (l -> ini -> elemento -> chave < elemento -> chave){
+        while ((aux -> prox) && (aux -> prox -> elemento -> chave < elemento -> chave))
+            aux = aux -> prox;
+        
+        novo -> prox = aux -> prox;
+        aux -> prox = novo;
     }
+    else {
+        novo -> prox = l -> ini;
+        l -> ini = novo;
+    }
+    printf("novo inicio: %d\n ", l -> ini -> elemento -> chave);
+    return 1;
 }
 
 /* Retira o elemento da Lista e a mantem em ordem.
  * Retorna 1 em caso de sucesso e 0 caso elemento nao esteja na Lista. */
 int lista_remove_ordenado (lista_t *l, elemento_t *elemento){
+    nodo_t *aux, *aux2;
 
+    aux = l-> ini;
+    if (!aux)
+        return 0;
+
+    while ((aux -> prox) && (aux -> prox -> elemento -> chave != elemento -> chave))
+        aux = aux -> prox;
+
+    if (!aux -> prox)
+        return 0;
+
+    aux2 = aux -> prox -> prox;
+    free(aux -> prox -> elemento);
+    free(aux -> prox);
+    aux -> prox = aux2;
+    return 1;
 }
