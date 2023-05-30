@@ -55,7 +55,7 @@ void imprim_lista(lista_t *l){
     nodo_t *aux;
 
     aux = l -> ini;
-    printf("%p\n", l -> ini);
+    printf("inicio: %d\n", l -> ini -> elemento -> chave);
     printf("imprimindo lista:\n");
     while (aux != NULL){
         printf("\t item: %d ", aux -> elemento -> chave);
