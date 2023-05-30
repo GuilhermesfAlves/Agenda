@@ -87,19 +87,20 @@ int lista_insere_ordenado (lista_t *l, elemento_t *elemento){
 int lista_remove_ordenado (lista_t *l, elemento_t *elemento){
     nodo_t *aux, *aux2;
 
-    aux = l-> ini;
+    aux = l -> ini;
     if (!aux)
         return 0;
 
-    while ((aux -> prox) && (aux -> prox -> elemento -> chave != elemento -> chave))
+     /*o auxiliar anda ate achar o elemento ou o fim*/
+    while ((aux -> prox != NULL) && (aux -> elemento -> chave != elemento -> chave))
         aux = aux -> prox;
 
-    if (!aux -> prox)
-        return 0;
+    if ((aux -> prox == NULL) && (aux -> elemento -> chave != elemento -> chave)) 
+        return 0; /*caso onde nao se acha o elemento*/
 
-    aux2 = aux -> prox -> prox;
-    free(aux -> prox -> elemento);
-    free(aux -> prox);
-    aux -> prox = aux2;
+    aux2 = aux -> prox;
+    free(aux -> elemento);
+    free(aux);
+    aux = aux2;
     return 1;
 }
