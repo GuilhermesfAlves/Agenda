@@ -39,7 +39,7 @@ void lista_destroi (lista_t **l){
     if (aux)
         do {
             lista -> ini = lista -> ini -> prox; 
-            free(aux -> elemento);
+            /*free(aux -> elemento);*/
             free(aux);
             aux = lista -> ini;
         } while (aux);
@@ -59,26 +59,14 @@ int lista_insere_ordenado (lista_t *l, elemento_t *elemento){
     novo -> elemento = elemento;
 
     aux = l -> ini;
-
-    if (aux)
-        printf("inicio: %d\n ", aux -> elemento -> chave);
-
-    if (!l -> ini){
-        novo -> prox = l -> ini;
-        l -> ini = novo;
-    }
-    else if (l -> ini -> elemento -> chave < elemento -> chave){
-        while ((aux -> prox) && (aux -> prox -> elemento -> chave < elemento -> chave))
-            aux = aux -> prox;
-        
-        novo -> prox = aux -> prox;
-        aux -> prox = novo;
-    }
-    else {
-        novo -> prox = l -> ini;
-        l -> ini = novo;
-    }
-    printf("novo inicio: %d\n ", l -> ini -> elemento -> chave);
+   
+    if ((aux) && (aux -> elemento -> chave < elemento -> chave)){
+        do aux = aux -> prox;
+        while ((aux) && (aux -> elemento -> chave < elemento -> chave));}
+    novo -> prox = aux;
+    aux = novo;
+    if (!l -> ini) /*problema*/
+        l-> ini = aux;
     return 1;
 }
 
@@ -92,14 +80,14 @@ int lista_remove_ordenado (lista_t *l, elemento_t *elemento){
         return 0;
 
      /*o auxiliar anda ate achar o elemento ou o fim*/
-    while ((aux -> prox != NULL) && (aux -> elemento -> chave != elemento -> chave))
+    while ((aux -> prox) && (aux -> elemento -> chave != elemento -> chave))
         aux = aux -> prox;
 
-    if ((aux -> prox == NULL) && (aux -> elemento -> chave != elemento -> chave)) 
+    if ((!aux -> prox) && (aux -> elemento -> chave != elemento -> chave)) 
         return 0; /*caso onde nao se acha o elemento*/
 
     aux2 = aux -> prox;
-    free(aux -> elemento);
+    /*free(aux -> elemento);*/
     free(aux);
     aux = aux2;
     return 1;
