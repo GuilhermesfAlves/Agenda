@@ -60,13 +60,17 @@ int lista_insere_ordenado (lista_t *l, elemento_t *elemento){
 
     aux = l -> ini;
    
-    if ((aux) && (aux -> elemento -> chave < elemento -> chave)){
-        do aux = aux -> prox;
-        while ((aux) && (aux -> elemento -> chave < elemento -> chave));}
-    novo -> prox = aux;
-    aux = novo;
-    if (!l -> ini) /*problema*/
-        l-> ini = aux;
+    if ((!aux) || (aux -> elemento -> chave > elemento -> chave)){
+        novo -> prox = aux;
+        l -> ini = novo;
+    }
+
+    else{
+        while ((aux -> prox) && (aux -> prox -> elemento -> chave < elemento -> chave))
+            aux = aux -> prox;
+        novo -> prox = aux -> prox;
+        aux -> prox = novo; 
+    }
     return 1;
 }
 
@@ -79,16 +83,23 @@ int lista_remove_ordenado (lista_t *l, elemento_t *elemento){
     if (!aux)
         return 0;
 
-     /*o auxiliar anda ate achar o elemento ou o fim*/
-    while ((aux -> prox) && (aux -> elemento -> chave != elemento -> chave))
-        aux = aux -> prox;
+         /*o auxiliar anda ate achar o elemento ou o fim*/
+    if (aux -> elemento -> chave != elemento -> chave){
+        while ((aux -> prox) && (aux -> prox -> elemento -> chave != elemento -> chave))
+            aux = aux -> prox;
 
-    if ((!aux -> prox) && (aux -> elemento -> chave != elemento -> chave)) 
-        return 0; /*caso onde nao se acha o elemento*/
-
-    aux2 = aux -> prox;
-    /*free(aux -> elemento);*/
-    free(aux);
-    aux = aux2;
+        if (aux -> prox -> elemento -> chave != elemento -> chave) 
+            return 0; /*caso onde nao se acha o elemento*/
+        aux2 = aux -> prox -> prox;
+        /*free(aux -> elemento);*/
+        free(aux -> prox);
+        aux -> prox = aux2;
+    }
+    else{
+        aux2 = aux -> prox;
+        /*free(aux -> elemento);*/
+        free(aux);
+        l -> ini = aux2;
+    }
     return 1;
 }

@@ -69,6 +69,18 @@ void set_element(elemento_t vet[]){
     }
 }
 
+void tamanho_lista(lista_t *l){
+    nodo_t *aux;
+    int cont=0;
+    
+    aux = l -> ini;
+    while (aux != NULL){
+        aux = aux -> prox;
+        cont++;
+    };
+    printf("lista com %d elementos\n", cont);
+}
+
 void imprim_lista(lista_t *l){
     nodo_t *aux;
 
@@ -97,6 +109,7 @@ int main(){
         printf("problema testa_insere\n");
         return 0;
     }
+    tamanho_lista(l);
     imprim_lista(l);
     if (!testa_remove(l,v)){
         printf("problema testa_remove\n");
