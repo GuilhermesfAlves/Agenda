@@ -1,5 +1,6 @@
 #include "lib_listaordenada.h"
 #include <stdio.h>
+#include <stdlib.h>
 #define max 9
 
 lista_t *testa_cria(){
@@ -63,7 +64,7 @@ void set_element(elemento_t vet[]){
     int i=0;
 
     while (i < max){
-        vet[i].chave = i;
+        vet[i].chave = rand() % 10;
         printf("elemento %d setado: %d\n", i, vet[i].chave);
         i++;
     }
