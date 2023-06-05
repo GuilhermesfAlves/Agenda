@@ -69,16 +69,21 @@ int lista_remove_ordenado (lista_t *l, elemento_t *elemento){
     if (!lista_vazia(l)){
         while ((aux -> prox != l -> ini) && (aux -> elemento -> chave != elemento -> chave))
             aux = aux -> prox;
-        if (aux == l -> ini)
-            l -> ini = l -> ini -> prox;
-        if (l -> ini -> prox == l -> ini)
-            l -> ini = NULL; /*tira o ultimo elemento*/
-        else { 
-            aux -> prox -> prev = aux -> prev;
-            aux -> prev -> prox = aux -> prox;
+
+        if (aux -> elemento -> chave == elemento -> chave){
+            /*caso onde o elemento esta presente*/
+            if (aux == l -> ini)
+                l -> ini = l -> ini -> prox;       /*caso onde se quer retirar o inicio*/
+            
+            if (l -> ini -> prox == l -> ini)
+                l -> ini = NULL;                   /*tira o ultimo elemento*/
+            else { 
+                aux -> prox -> prev = aux -> prev; /*não é o ultimo elemento da lista*/
+                aux -> prev -> prox = aux -> prox;
+            }
+            free(aux);
+            return 1;
         }
-        free(aux);
-        return 1;
     }
     return 0;
 }

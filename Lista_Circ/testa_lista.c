@@ -93,6 +93,18 @@ void imprim_infinit(lista_t *lista){
     printf("\n");
 }
 
+void imprim_prox_prev(lista_t *lista){
+    nodo_t *aux, *aux2;
+
+    aux = lista -> ini;
+    aux2 = aux;
+    if (!lista_vazia(lista))
+        do {
+            printf("%d <- %d -> %d \n", aux -> prev -> elemento -> chave, aux -> elemento -> chave, aux -> prox -> elemento -> chave);
+            aux = aux -> prox;
+        } while(aux != aux2);
+}
+
 int testa_remove(lista_t *lista, elemento_t vet[]){
     int i=0;
 
@@ -105,24 +117,12 @@ int testa_remove(lista_t *lista, elemento_t vet[]){
         if (!lista_remove_ordenado(lista, &vet[i])){
             printf("erro remove\n");
             return 0;
-        };
+        }
+        imprim_prox_prev(lista);
         i++;
     };
     return 1;
 }
-
-void imprim_prox_prev(lista_t *lista){
-    nodo_t *aux;
-    int i=0;
-
-    aux = lista -> ini;
-    while(i < max){
-        printf("%d <- %d -> %d \n", aux -> prev -> elemento -> chave, aux -> elemento -> chave, aux -> prox -> elemento -> chave);
-        aux = aux -> prox;
-        i++;
-    }
-}
-
 
 int main(){
     lista_t *lista;
