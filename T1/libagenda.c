@@ -80,17 +80,21 @@ compromisso_t* compr_agenda(agenda_t* agenda, int dia){
 /* Retorna o primeiro compromisso da lista de compromissos compr e avanca
  * para o prox. Retorna NULL se a lista esta vazia, ou seja, sem compromissos.*/
 compromisso_t* prox_compr(compromisso_t* compr){
+    compromisso_t *atual;
 
+    atual = compr;
+    compr = compr -> prox;
+    return atual;
 }
 
 /* funcoes getters */
 horario_compromisso_t hc_compr(compromisso_t* compr){
     horario_compromisso_t horas;
 
-    horas.ini_h = compr -> inicio;
-    horas.ini_m = 0; 
-    horas.fim_h = compr -> fim;
-    horas.fim_m = 0;
+    horas.ini_h = compr -> inicio / 60;
+    horas.ini_m = compr -> inicio - horas.ini_h*60; 
+    horas.fim_h = compr -> fim / 60;
+    horas.fim_m = compr -> fim - horas.fim_h*60;
     return horas;
 } 
 
@@ -105,5 +109,19 @@ char* descricao_compr(compromisso_t* compr){
 /* Essa funcao nao eh extritamente necessaria, o objetivo e' que o programa
 principal apresente os dados. Porem pode ser util para voces durante o desenvolvimento */ 
 void imprime_agenda_mes(agenda_t* agenda){
+    horario_compromisso_t hora_compr;
 
+    prim_mes_agenda(agenda);
+    do {
+        printf("MES: %d\n ", agenda -> mes_atual);
+        do {
+            printf("DIA: %d, ", agenda -> ptr_mes_atual -> dias -> dia);
+            while (agenda -> ptr_mes_atual -> dias -> comprs){
+                printf("ID: %d \t", agenda -> ptr_mes_atual -> dias -> comprs -> id);
+                prox_compr(agenda -> ptr_mes_atual -> dias -> comprs);
+            } 
+            printf("-------");
+        } while (agenda -> ptr_mes_atual -> dias -> prox != NULL);
+        printf (" ********** ");
+    } while (prox_mes_agenda(agenda) > ant_mes_agenda(agenda));
 }

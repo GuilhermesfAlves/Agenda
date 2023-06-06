@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include <stdio.h>
 #include "lib_listacircular.h"
 
 /* Cria uma Lista vazia */
@@ -19,13 +18,15 @@ void lista_destroi (lista_t **l){
     nodo_t *aux;
 
     lista = *l;
-    aux = lista -> ini -> prox;
-    while (aux != lista -> ini){
-        aux -> prev -> prox = aux -> prox;
-        free(aux);
+    if (!lista_vazia(lista)){
         aux = lista -> ini -> prox;
+        while (aux != lista -> ini){
+            aux -> prev -> prox = aux -> prox;
+            free(aux);
+            aux = lista -> ini -> prox;
+        }
+        free(lista -> ini);
     }
-    free(lista -> ini);
     free (lista);
     l = NULL;
 }
