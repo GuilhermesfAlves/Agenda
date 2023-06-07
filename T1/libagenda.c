@@ -36,13 +36,28 @@ int marca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
 int desmarca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
 
 }
+
 /* Imprime a agenda do mes atual (mes atual) */
 void imprime_agenda_mes(agenda_t* agenda){
+    compromisso_t *compr;
 
+    do {
+        printf("DIA: %d, ", agenda -> ptr_mes_atual -> dias -> dia);
+        compr = agenda -> ptr_mes_atual -> dias -> comprs; 
+        while (compr){
+            printf("ID: %d \t", id_compr(compr));
+            printf("descricao: %c \t", descricao_compr(compr));
+            printf("\n");
+            prox_compr(compr);
+        } 
+        printf("-------\n");
+    } while (agenda -> ptr_mes_atual -> dias -> prox != NULL);
+    printf ("**********\n");
 }
 
 /* Retorna o mes atual da agenda. */
 int mes_atual_agenda(agenda_t *agenda){
+
     return agenda -> mes_atual;
 }
 
@@ -58,23 +73,43 @@ void prim_mes_agenda(agenda_t* agenda){
  * Se o novo mes_atual nao existir deve ser alocado. A funcao retorna o inteiro 
  * mes_atual em caso de sucesso ou 0 caso contrario.  */ 
 int prox_mes_agenda(agenda_t* agenda){
+    mes_t *mes;
+
+    if (!agenda -> ptr_mes_atual -> prox)
+        if (!(mes = malloc(sizeof(mes_t))))
+            return 0;
+
     agenda -> ptr_mes_atual = agenda -> ptr_mes_atual -> prox;
     agenda -> mes_atual = agenda -> ptr_mes_atual -> mes;
-    return agenda -> mes_atual;
+    return 1;
 }
 
 /* Analogo ao prox_mes_agenda porem decrementa mes_atual. */ 
 int ant_mes_agenda(agenda_t* agenda){
+    mes_t *mes;
+
+    if (!agenda -> ptr_mes_atual -> ant)
+        if (!(mes = malloc(sizeof(mes_t))))
+            return 0;
+    
     agenda -> ptr_mes_atual = agenda -> ptr_mes_atual -> ant;
     agenda -> mes_atual = agenda -> ptr_mes_atual -> mes;
-    return agenda -> mes_atual;    
+    return 1;    
 }
 
 /* Retorna um ponteiro para a lista ligada de compromissos de um dia do mes
    ou NULL se vazia. A lista de compromissos retornada pode ser percorrida
    usando-se a funcao prox_compr. */ 
 compromisso_t* compr_agenda(agenda_t* agenda, int dia){
+    mes_t *mes;
+    dia_t *dia_aux;
 
+    mes = mes_atual_agenda(agenda);
+    dia_aux = mes -> dias;
+    while (dia_aux -> dia != dia)
+        dia_aux = dia_aux -> prox;
+
+    return dia_aux -> comprs;
 }
 
 /* Retorna o primeiro compromisso da lista de compromissos compr e avanca
@@ -113,15 +148,8 @@ void imprime_agenda_mes(agenda_t* agenda){
 
     prim_mes_agenda(agenda);
     do {
-        printf("MES: %d\n ", agenda -> mes_atual);
-        do {
-            printf("DIA: %d, ", agenda -> ptr_mes_atual -> dias -> dia);
-            while (agenda -> ptr_mes_atual -> dias -> comprs){
-                printf("ID: %d \t", agenda -> ptr_mes_atual -> dias -> comprs -> id);
-                prox_compr(agenda -> ptr_mes_atual -> dias -> comprs);
-            } 
-            printf("-------");
-        } while (agenda -> ptr_mes_atual -> dias -> prox != NULL);
-        printf (" ********** ");
-    } while (prox_mes_agenda(agenda) > ant_mes_agenda(agenda));
+        printf("MES: %d\n ", mes_atual_agenda(agenda));
+        imprime_agenda_mes(agenda);
+        prox_mes_agenda(agenda);
+    } while (mes_atual_agenda(agenda) != 1);
 }
