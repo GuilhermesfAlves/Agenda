@@ -9,12 +9,52 @@
    id e uma string de descricao. A funcao deve alocar um novo espaco de 
    armazenamento para receber a string descricao. */ 
 compromisso_t* cria_compromisso (horario_compromisso_t hc, int id,  char* descricao){
+    compromisso_t *compr;
 
+    if (!(compr = malloc(sizeof(compromisso_t))))
+        return NULL;
+    
+    compr -> id = id;
+    compr -> descricao = descricao;
+    compr -> inicio = hc.ini_h*60 + hc.ini_m;
+    compr -> fim = hc.fim_h*60 + hc.fim_m;
+    compr -> prox = NULL;
+
+    return compr;
 }
 
 /* Libera toda memoria associado a agenda. */
 void destroi_agenda(agenda_t* agenda){
+    mes_t *aux_mes;
+    dia_t *aux_dia;
+    compromisso_t *aux_compr;
+    
+    aux_mes = agenda -> ptr_mes_atual -> prox; 
+    while (aux_mes != agenda -> ptr_mes_atual){
+        aux_dia = aux_mes -> dias;
+        
+        while (aux_dia){
+            aux_compr = aux_dia -> comprs;
+        
+            while (aux_compr){
+                aux_dia -> comprs = aux_dia -> comprs -> prox;
+                free(aux_compr);
+                aux_compr = aux_dia -> comprs; 
+            }
+        
+            aux_mes -> dias = aux_mes -> dias -> prox;
+            free(aux_dia);
+            aux_dia = aux_mes -> dias;
+        }
 
+        aux_mes -> ant -> prox = aux_mes -> prox;
+        free(aux_mes);
+        aux_mes = agenda -> ptr_mes_atual -> prox;
+    }
+    
+    free(agenda -> ptr_mes_atual);
+    agenda -> ptr_mes_atual = NULL;
+    agenda -> mes_atual = 0;
 }
 
 /* Marca um compromisso na agenda:
@@ -27,7 +67,60 @@ void destroi_agenda(agenda_t* agenda){
     testar a interseccao entre horarios de inicio e de fim no compromisso novo
     considerando o  compromisso anterior e o proximo, caso existam. */
 int marca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
+    dia_t *aux_dia, *novo_dia;
+    compromisso_t *aux_compr;
 
+    if (!(novo_dia = malloc(sizeof(dia_t))))
+        return 0;
+
+    novo_dia -> comprs = compr;
+    novo_dia -> dia = dia;
+    aux_dia = agenda -> ptr_mes_atual -> dias;
+   
+   /*caso onde se coloca na primeira posição*/
+    if ((!aux_dia) || (aux_dia -> dia > dia)){
+        novo_dia -> prox = aux_dia;
+        agenda -> ptr_mes_atual -> dias = novo_dia;
+    }
+
+    else {
+        /*corredor de dias*/
+        while ((aux_dia -> prox) && (aux_dia -> prox -> dia < dia))
+            aux_dia = aux_dia -> prox;
+        
+        /*novo compromisso em um dia ja alocado*/
+        if (dia = aux_dia -> prox -> dia){
+            
+            aux_dia = aux_dia -> prox;
+            free(novo_dia);
+            aux_compr = aux_dia -> comprs;
+
+            /*caso onde o compromisso é antes de qualquer um*/
+            if (compr -> inicio < aux_compr -> inicio){
+                compr -> prox = aux_compr;
+                agenda -> ptr_mes_atual -> dias -> comprs = compr;
+            }
+            else {
+                /*corredor de compromissos*/
+                while ((aux_compr -> prox) && (compr -> inicio < aux_compr -> prox -> inicio))
+                    aux_compr = aux_compr -> prox;
+
+                compr -> prox = aux_compr -> prox;
+                aux_compr -> prox = compr;
+            }
+
+            /*confere intersecçao*/
+            aux_compr = agenda -> ptr_mes_atual -> dias -> comprs;
+            while(aux_compr -> prox) 
+                if (aux_compr -> fim > aux_compr -> prox -> inicio)
+                    return -1;
+        }
+        else {
+            novo_dia -> prox = aux_dia -> prox;
+            aux_dia -> prox = novo_dia;
+        } 
+    }
+    return 1;
 }
 
 /* Desmarca o compromisso compr da agenda:
@@ -36,7 +129,26 @@ int marca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
       1: em caso de sucesso
       0: caso nao tenha encontrado o compr */
 int desmarca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
+    compromisso_t *aux_compr, *aux2_compr;
+    dia_t *aux_dia;
 
+    aux_dia = agenda -> ptr_mes_atual;
+    if (aux_dia -> dia != dia){
+        while ((aux_dia -> prox) && (aux_dia -> prox -> dia != dia))
+            aux_dia = aux_dia -> prox;
+        
+        if (aux_dia -> prox -> dia != dia)
+            return 0;
+        
+    }
+    else {
+        aux_compr = aux_dia -> comprs;
+        if (aux_compr -> id != compr -> id){
+            while ((aux_compr -> prox) && (aux_compr -> prox -> id != compr -> id))
+                aux_compr = aux_compr -> prox;
+             
+        }
+    }
 }
 
 /* Imprime a agenda do mes atual (mes atual) */
