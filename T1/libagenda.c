@@ -24,6 +24,7 @@ compromisso_t* cria_compromisso (horario_compromisso_t hc, int id,  char* descri
 }
 
 /* Libera toda memoria associado a agenda. */
+/*OK*/
 void destroi_agenda(agenda_t* agenda){
     mes_t *aux_mes;
     dia_t *aux_dia;
@@ -66,6 +67,7 @@ void destroi_agenda(agenda_t* agenda){
     A lista de compromisso eh ordenada pelo horario de inicio. Eh necessario
     testar a interseccao entre horarios de inicio e de fim no compromisso novo
     considerando o  compromisso anterior e o proximo, caso existam. */
+/*OK*/
 int marca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
     dia_t *aux_dia, *novo_dia;
     compromisso_t *aux_compr;
@@ -89,7 +91,7 @@ int marca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
             aux_dia = aux_dia -> prox;
         
         /*novo compromisso em um dia ja alocado*/
-        if (dia == aux_dia -> prox -> dia){
+        if ((aux_dia -> prox) && (dia == aux_dia -> prox -> dia)){
             
             aux_dia = aux_dia -> prox;
             free(novo_dia);
@@ -98,8 +100,9 @@ int marca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
             /*caso onde o compromisso é antes de qualquer um*/
             if (compr -> inicio < aux_compr -> inicio){
                 compr -> prox = aux_compr;
-                agenda -> ptr_mes_atual -> dias -> comprs = compr;
+                aux_dia -> comprs = compr;
             }
+
             else {
                 /*corredor de compromissos*/
                 while ((aux_compr -> prox) && (compr -> inicio < aux_compr -> prox -> inicio))
@@ -110,8 +113,8 @@ int marca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
             }
 
             /*confere intersecçao*/
-            aux_compr = agenda -> ptr_mes_atual -> dias -> comprs;
-            while(aux_compr -> prox) 
+            aux_compr = aux_dia -> comprs;
+            while (aux_compr -> prox) 
                 if (aux_compr -> fim > aux_compr -> prox -> inicio)
                     return -1;
         }
@@ -133,6 +136,9 @@ int desmarca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr)
     dia_t *aux_dia, *aux2_dia;
 
     aux_dia = agenda -> ptr_mes_atual -> dias;
+    if (!aux_dia)
+        return 0;
+        
     if (aux_dia -> dia != dia){
         while ((aux_dia -> prox) && (aux_dia -> prox -> dia != dia))
             aux_dia = aux_dia -> prox;
