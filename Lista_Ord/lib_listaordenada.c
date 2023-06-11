@@ -83,19 +83,22 @@ int lista_remove_ordenado (lista_t *l, elemento_t *elemento){
     if (!aux)
         return 0;
 
-         /*o auxiliar anda ate achar o elemento ou o fim*/
+    /*caso onde não é a primeira posição da lista*/
     if (aux -> elemento -> chave != elemento -> chave){
+        /*o auxiliar anda ate achar o elemento ou o fim*/
         while ((aux -> prox) && (aux -> prox -> elemento -> chave != elemento -> chave))
             aux = aux -> prox;
 
-        if (aux -> prox -> elemento -> chave != elemento -> chave) 
+        if (!aux -> prox) 
             return 0; /*caso onde nao se acha o elemento*/
+        
         aux2 = aux -> prox -> prox;
         /*free(aux -> elemento);*/
         free(aux -> prox);
         aux -> prox = aux2;
     }
-    else{
+    /*caso onde é a primeira posição da lista*/
+    else {
         aux2 = aux -> prox;
         /*free(aux -> elemento);*/
         free(aux);
