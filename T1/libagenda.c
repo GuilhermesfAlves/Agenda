@@ -8,6 +8,7 @@
    Retorna um compromisso com as informacoes de data de hc, um identificador
    id e uma string de descricao. A funcao deve alocar um novo espaco de 
    armazenamento para receber a string descricao. */ 
+/*OK*/
 compromisso_t* cria_compromisso (horario_compromisso_t hc, int id,  char* descricao){
     compromisso_t *compr;
 
@@ -37,11 +38,8 @@ void destroi_agenda(agenda_t* agenda){
         while (aux_dia){
             aux_compr = aux_dia -> comprs;
         
-            while (aux_compr){
-                aux_dia -> comprs = aux_dia -> comprs -> prox;
-                free(aux_compr);
-                aux_compr = aux_dia -> comprs; 
-            }
+            while (aux_compr)
+                free(prox_compr(aux_compr));
         
             aux_mes -> dias = aux_mes -> dias -> prox;
             free(aux_dia);
@@ -244,18 +242,18 @@ void prim_mes_agenda(agenda_t* agenda){
     mes_t *mes;
 
     mes = agenda -> ptr_mes_atual;
-    /*agenda vazia*/
-    if (!mes) {
-        agenda -> ptr_mes_atual = NULL;
-        return;
-    }
 
-    while (mes -> mes != JAN){
-        mes = mes -> prox;
-        if (mes == agenda -> ptr_mes_atual){
-            agenda -> ptr_mes_atual = NULL;
-            return;
+    if (mes){ 
+        while (mes -> mes != JAN){
+            mes = mes -> prox;
+            if (mes == agenda -> ptr_mes_atual){
+                agenda -> mes_atual = 0;
+                agenda -> ptr_mes_atual = NULL;
+                return;
+            }
         }
+        agenda -> ptr_mes_atual = mes;
+        agenda -> mes_atual = JAN;
     }
 }
 
@@ -263,6 +261,7 @@ void prim_mes_agenda(agenda_t* agenda){
  * O ponteiro ptr_mes_atual deve ser atualizado para apontar para o novo mes_atual.
  * Se o novo mes_atual nao existir deve ser alocado. A funcao retorna o inteiro 
  * mes_atual em caso de sucesso ou 0 caso contrario.  */ 
+/*OK*/
 int prox_mes_agenda(agenda_t* agenda){
     mes_t *mes;
 
@@ -270,6 +269,11 @@ int prox_mes_agenda(agenda_t* agenda){
         if ((agenda -> mes_atual != DEZ) || (agenda -> ptr_mes_atual -> prox -> mes != JAN)){
             if (!(mes = malloc(sizeof(mes_t))))
                 return 0;
+
+            mes -> dias = NULL;
+            mes -> mes = agenda -> mes_atual + 1;
+            if (mes -> mes > DEZ)
+                mes -> mes = JAN;
 
             mes -> prox = agenda -> ptr_mes_atual -> prox;
             mes -> ant = agenda -> ptr_mes_atual;
@@ -284,6 +288,7 @@ int prox_mes_agenda(agenda_t* agenda){
 }
 
 /* Analogo ao prox_mes_agenda porem decrementa mes_atual. */ 
+/*OK*/
 int ant_mes_agenda(agenda_t* agenda){
     mes_t *mes;
 
@@ -291,6 +296,11 @@ int ant_mes_agenda(agenda_t* agenda){
         if ((agenda -> mes_atual != JAN) || (agenda -> ptr_mes_atual -> ant -> mes != DEZ)){
             if (!(mes = malloc(sizeof(mes_t))))
                 return 0;
+
+            mes -> dias = NULL;
+            mes -> mes = agenda -> mes_atual - 1;
+            if (mes -> mes < JAN)
+                mes -> mes = DEZ;
 
             mes -> prox = agenda -> ptr_mes_atual;
             mes -> ant = agenda -> ptr_mes_atual -> ant;
@@ -309,13 +319,14 @@ int ant_mes_agenda(agenda_t* agenda){
    usando-se a funcao prox_compr. */ 
 /*OK*/
 compromisso_t* compr_agenda(agenda_t* agenda, int dia){
-    mes_t *mes;
     dia_t *dia_aux;
 
-    mes = agenda -> ptr_mes_atual;
-    dia_aux = mes -> dias;
-    while (dia_aux -> dia != dia)
+    dia_aux = agenda -> ptr_mes_atual -> dias;
+    while ((dia_aux) && (dia_aux -> dia != dia))
         dia_aux = dia_aux -> prox;
+
+    if (!dia_aux)
+        return NULL;
 
     return dia_aux -> comprs;
 }
@@ -327,7 +338,9 @@ compromisso_t* prox_compr(compromisso_t* compr){
     compromisso_t *atual;
 
     atual = compr;
-    compr = compr -> prox;
+    if (atual)
+        compr = compr -> prox;
+
     return atual;
 }
 
@@ -340,6 +353,7 @@ horario_compromisso_t hc_compr(compromisso_t* compr){
     horas.ini_m = compr -> inicio - horas.ini_h*60; 
     horas.fim_h = compr -> fim / 60;
     horas.fim_m = compr -> fim - horas.fim_h*60;
+
     return horas;
 } 
 
