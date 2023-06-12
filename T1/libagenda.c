@@ -124,6 +124,19 @@ int marca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
     return 1;
 }
 
+/*tentativa 2 sem sucesso*/
+int desmarca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
+    compromisso_t *aux_compr, *aux2_compr;
+    dia_t *aux_dia, *aux2_dia;
+
+    if (!(aux_compr = compr_agenda(agenda, dia)))
+        return 0; /*nao achou o dia em questão*/
+    
+    /*compromisso na primeira posição*/
+    /*erro: como alterar pra onde o primeiro compromisso do dia aponta
+    * se eu não tenho o dia */
+}
+
 /* Desmarca o compromisso compr da agenda:
    O parametro compr eh um ponteiro para um compromisso existente da agenda.
    valores de retorno possiveis:
