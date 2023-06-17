@@ -1,7 +1,8 @@
 #include "lib_listaordenada.h"
 #include <stdio.h>
 #include <stdlib.h>
-#define max 9
+#include <time.h>
+#define max 18
 
 lista_t *testa_cria(){
     lista_t *l;
@@ -63,8 +64,9 @@ int testa_remove(lista_t *lista, elemento_t vet[]){
 void set_element(elemento_t vet[]){
     int i=0;
 
+    srand((unsigned)time(0));
     while (i < max){
-        vet[i].chave = rand() % 10;
+        vet[i].chave = rand() % 100;
         printf("elemento %d setado: %d\n", i, vet[i].chave);
         i++;
     }

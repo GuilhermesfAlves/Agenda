@@ -35,14 +35,12 @@ void lista_destroi (lista_t **l){
 
     lista = *l;
     aux = lista -> ini;
-    
-    if (aux)
-        do {
-            lista -> ini = lista -> ini -> prox; 
-            /*free(aux -> elemento);*/
-            free(aux);
-            aux = lista -> ini;
-        } while (aux);
+    while (aux){
+        lista -> ini = lista -> ini -> prox; 
+        /*free(aux -> elemento);*/
+        free(aux);
+        aux = lista -> ini;
+    }
 
     free(*l);
     *l = NULL;
@@ -65,9 +63,10 @@ int lista_insere_ordenado (lista_t *l, elemento_t *elemento){
         l -> ini = novo;
     }
 
-    else{
+    else {
         while ((aux -> prox) && (aux -> prox -> elemento -> chave < elemento -> chave))
             aux = aux -> prox;
+            
         novo -> prox = aux -> prox;
         aux -> prox = novo; 
     }

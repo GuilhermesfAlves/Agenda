@@ -1,8 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "libagenda.h"
-#define JAN 1
-#define DEZ 12
+#include "libfuncs.h"
 
 /* Cria um compromisso:
    Retorna um compromisso com as informacoes de data de hc, um identificador
