@@ -1,5 +1,11 @@
 #include "libagenda.h"
-#include "libfuncs.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#define JAN 1
+#define DEZ 12
+#define num_func 30
+#define num_taref 100
 
 /* Cria um compromisso:
    Retorna um compromisso com as informacoes de data de hc, um identificador
@@ -89,18 +95,18 @@ int marca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
         if ((aux_dia -> prox) && (dia == aux_dia -> prox -> dia)){
             
             aux_dia = aux_dia -> prox;
-            free(novo_dia);
+            //free(novo_dia);
             aux_compr = aux_dia -> comprs;
 
             /*caso onde o compromisso é antes de qualquer um*/
-            if (compr -> inicio < aux_compr -> inicio){
+            if ((!aux_compr) || (compr -> inicio < aux_compr -> inicio)){
                 compr -> prox = aux_compr;
                 aux_dia -> comprs = compr;
             }
 
             else {
                 /*corredor de compromissos*/
-                while ((aux_compr -> prox) && (compr -> inicio < aux_compr -> prox -> inicio))
+                while ((aux_compr -> prox) && (compr -> inicio > aux_compr -> prox -> inicio))
                     aux_compr = aux_compr -> prox;
 
                 compr -> prox = aux_compr -> prox;
@@ -109,9 +115,11 @@ int marca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
 
             /*confere intersecçao*/
             aux_compr = aux_dia -> comprs;
-            while (aux_compr -> prox) 
+            while (aux_compr -> prox) {
                 if (aux_compr -> fim > aux_compr -> prox -> inicio)
                     return -1;
+                aux_compr = aux_compr -> prox;    
+            }
         }
         else {
             novo_dia -> prox = aux_dia -> prox;
@@ -121,18 +129,18 @@ int marca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
     return 1;
 }
 
-/*tentativa 2 sem sucesso*/
+/*tentativa 2 sem sucesso
 int desmarca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
     compromisso_t *aux_compr, *aux2_compr;
     dia_t *aux_dia, *aux2_dia;
 
     if (!(aux_compr = compr_agenda(agenda, dia)))
-        return 0; /*nao achou o dia em questão*/
+        return 0; nao achou o dia em questão*/
     
     /*compromisso na primeira posição*/
     /*erro: como alterar pra onde o primeiro compromisso do dia aponta
     * se eu não tenho o dia */
-}
+
 
 /* Desmarca o compromisso compr da agenda:
    O parametro compr eh um ponteiro para um compromisso existente da agenda.
@@ -157,22 +165,26 @@ int desmarca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr)
         aux2_dia = aux_dia -> prox -> prox;
         /*logica para dia diferente do primeiro*/
         aux_compr = aux_dia -> prox -> comprs;
-        if (aux_compr -> id != compr -> id){
-            while ((aux_compr -> prox) && (aux_compr -> prox -> id != compr -> id))
+        if (!aux_compr)
+            return 0;
+        if (aux_compr != compr){
+            while ((aux_compr -> prox) && (aux_compr -> prox != compr))
                 aux_compr = aux_compr -> prox;
            
             if (!aux_compr -> prox)
                 return 0;
             
             aux2_compr = aux_compr -> prox -> prox;
+            free(aux_compr -> prox -> descricao);
             free(aux_compr -> prox);
             aux_compr -> prox = aux2_compr;
         }
         /*primeiro compromisso do dia*/
         else {
             aux2_compr = aux_compr -> prox;
+            free(aux_compr -> descricao);
             free(aux_compr);
-            aux_dia -> comprs = aux2_compr;
+            aux_dia -> prox -> comprs = aux2_compr;
         
             if (!aux_dia -> prox -> comprs){
                 free(aux_dia -> prox);
@@ -182,20 +194,22 @@ int desmarca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr)
     }
     else {
         aux_compr = aux_dia -> comprs;
-        if (aux_compr -> id != compr -> id){
-            while ((aux_compr -> prox) && (aux_compr -> prox -> id != compr -> id))
+        if (aux_compr != compr){
+            while ((aux_compr -> prox) && (aux_compr -> prox != compr))
                 aux_compr = aux_compr -> prox;
             
             if (!aux_compr -> prox)
                 return 0;
             
             aux2_compr = aux_compr -> prox -> prox;
+            free(aux_compr -> prox -> descricao);
             free(aux_compr -> prox);
             aux_compr -> prox = aux2_compr;
         }
         /*primeiro compromisso do dia*/
         else {
             aux2_compr = aux_compr -> prox;
+            free(aux_compr -> descricao);
             free(aux_compr);
             aux_dia -> comprs = aux2_compr;
 
@@ -215,20 +229,20 @@ void imprime_agenda_mes(agenda_t* agenda){
     dia_t *dia;
     compromisso_t *compr;
 
-    printf("MES: %d\n ", agenda -> mes_atual);
+    printf("MES: %.2d\n ", agenda -> mes_atual);
     dia = agenda -> ptr_mes_atual -> dias;
 
     while (dia) {
-        printf("DIA: %2d\n ", dia -> dia);
+        printf("DIA: %.2d\n ", dia -> dia);
         compr = dia -> comprs; 
 
         while (compr){
-            printf("\t ID: %3d ", id_compr(compr));
-            printf("\t descricao: %c ", *descricao_compr(compr));
-            pritnf("\t inicio: %4d ", compr -> inicio);
+            printf("\t ID: %.2d ", id_compr(compr));
+            printf("\t descricao: %s ", descricao_compr(compr));
+            printf("\t inicio: %4d ", compr -> inicio);
             printf("\t fim: %4d ", compr -> fim);
             printf("\n");
-            prox_compr(compr);
+            compr = compr -> prox;
         } 
         
         printf("-------\n");
@@ -369,6 +383,9 @@ horario_compromisso_t hc_compr(compromisso_t* compr){
 
 /*OK*/
 int id_compr(compromisso_t* compr){
+    
+    if (!compr)
+        return -5;
 
     return compr -> id;
 }

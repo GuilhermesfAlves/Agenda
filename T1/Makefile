@@ -1,21 +1,21 @@
 # Makefile de exemplo (Manual do GNU Make)
      
-CFLAGS = -Wall -std=c90 -g  # flags de compilacao
-LDFLAGS = -lm
+CFLAGS = -Wall -g  # flags de compilacao
+LDFLAGS = 
 
 CC = gcc
 
 # arquivos-objeto
-	objects = main.o libagenda.o 
+	objects = agenda.o libagenda.o 
      
-all: main.o libagenda.o
-	$(CC) -o main main.o libagenda.o $(LDFLAGS)
+all: agenda.o libagenda.o
+	$(CC) -o agenda agenda.o libagenda.o $(LDFLAGS)
 
 libagenda.o: libagenda.c
 	$(CC) -c $(CFLAGS) libagenda.c
 
-main.o: main.c
-	$(CC) -c $(CFLAGS) main.c
+agenda.o: agenda.c
+	$(CC) -c $(CFLAGS) agenda.c
 
 clean:
-	rm -f $(objects) main
+	rm -f $(objects) agenda

@@ -138,3 +138,7 @@ compromisso_t* prox_compr(compromisso_t* compr);
 horario_compromisso_t hc_compr(compromisso_t* compr); 
 int id_compr(compromisso_t* compr); 
 char* descricao_compr(compromisso_t* compr); 
+
+/* Essa funcao nao eh extritamente necessaria, o objetivo e' que o programa
+principal apresente os dados. Porem pode ser util para voces durante o desenvolvimento */ 
+void imprime_agenda_mes(agenda_t* agenda);
