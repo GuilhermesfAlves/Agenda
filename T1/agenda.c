@@ -72,14 +72,17 @@ void set_func_e_taref(func_t funcionarios[], taref_t tarefas[]){
     for (int i=0; i<num_func; i++){
         funcionarios[i].lideranca = ALEAT(0,100);
         funcionarios[i].experiencia = ALEAT(20,100);
-        if (!inicia_agendas(&funcionarios[i].agenda))
+        if (!inicia_agendas(&funcionarios[i].agenda)){
+            printf("erro alocacao janeiro em %d", i);
             return;
+        }
     }
     for (int i=0; i<num_taref; i++){
         tarefas[i].tempo_conclusao = ALEAT(600,800);
         tarefas[i].dificuldade = ALEAT(30,80);
     }
 }
+
 void imprime_status(func_t funcionarios[]){
 
     for (int i=0; i<num_func; i++)
@@ -117,18 +120,20 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
         for (int reun=0; reun<num_taref; reun++){
 
             do {
-                lider_num = ALEAT(0, num_func);
+                lider_num = ALEAT(0, num_func - 1);
+                printf("lider: %d  ", lider_num);
+                printf("lideranca: %d \n", funcionarios[lider_num].lideranca);
             } while((funcionarios[lider_num].lideranca < 30) || (funcionarios[lider_num].lideranca > 70));
 
             if (!(descricao = malloc(51*sizeof(char))))
                 return;
 
-            hc_compr.ini_h = ALEAT(8,12);
-            hc_compr.ini_m = ALEAT(0,3) * 15;
-            hc_compr.fim_h = hc_compr.ini_h + ALEAT (1,4);
+            hc_compr.ini_h = ALEAT(8, 12);
+            hc_compr.ini_m = ALEAT(0, 3) * 15;
+            hc_compr.fim_h = hc_compr.ini_h + ALEAT (1, 4);
             hc_compr.fim_m = hc_compr.ini_m;
-            dia = ALEAT(1,31);
-            id = ALEAT(0,reun-1);
+            dia = ALEAT(1, 31);
+            id = ALEAT(0, reun - 1);
             sprintf(descricao, "REUNIR L %.2d %.2d/%.2d %.2d:%.2d %.2d:%.2d T %.2d", lider_num, dia, mes, hc_compr.ini_h, hc_compr.ini_m, hc_compr.fim_h, hc_compr.fim_m, reun);
 
             printf("%s", descricao);
@@ -156,13 +161,8 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
                 printf("\tMEMBROS:");
 
                 for (int i=0; i<qtd_func; i++){
-                    /*escolhe um funcionario aleatorio diferente do lider*/
-                    /* exemplo do professor não faz isso
-                    do {
-                        i_func = ALEAT(0, num_func);
-                    } while (i_func == lider_num);
-                    */
-                    i_func = ALEAT(0, num_func);
+
+                    i_func = ALEAT(0, num_func - 1);
 
                     if (funcionarios[lider_num].lideranca > (funcionarios[i_func].lideranca + ALEAT(-20,10))){
                         printf(" %.2d:", i_func);
