@@ -34,35 +34,40 @@ void destroi_agenda(agenda_t* agenda){
     dia_t *aux_dia;
     compromisso_t *aux_compr;
     
-    aux_mes = agenda -> ptr_mes_atual -> prox; 
-    printf("excluindo dia do mes %d\n", aux_mes -> mes);
-    while (aux_mes){
+    aux_mes = agenda -> ptr_mes_atual;
+   
+   /*exclui todos os compromissos para cada mes*/
+    while (aux_mes -> dias) {
         aux_dia = aux_mes -> dias;
         
         while (aux_dia){
             aux_compr = aux_dia -> comprs;
         
             while (aux_compr){
-                aux_dia -> comprs = aux_dia -> comprs -> prox;
-                printf("exlcuindo: %d\n", id_compr(aux_compr));
+                aux_dia -> comprs = aux_compr -> prox;
+
                 free(aux_compr);
                 aux_compr = aux_dia -> comprs;
             }
         
-            aux_mes -> dias = aux_mes -> dias -> prox;
+            aux_mes -> dias = aux_dia -> prox;
             free(aux_dia);
             aux_dia = aux_mes -> dias;
         }
 
-        aux_mes -> ant -> prox = aux_mes -> prox;
-        free(aux_mes);
-        if (agenda -> ptr_mes_atual)
-            aux_mes = agenda -> ptr_mes_atual -> prox;
-        else{
-            aux_mes = NULL;
-        }
+        aux_mes = aux_mes -> prox;
     }
     
+    /*exclui todos os meses*/
+    while (aux_mes -> prox != aux_mes){
+        agenda -> ptr_mes_atual = aux_mes -> prox;
+        aux_mes -> ant -> prox = aux_mes -> prox;
+        aux_mes -> prox -> ant = aux_mes -> ant;
+        free(aux_mes);
+        aux_mes = agenda -> ptr_mes_atual;
+    }
+
+    free(aux_mes);
     agenda -> ptr_mes_atual = NULL;
     agenda -> mes_atual = 0;
 }
@@ -76,7 +81,7 @@ void destroi_agenda(agenda_t* agenda){
     A lista de compromisso eh ordenada pelo horario de inicio. Eh necessario
     testar a interseccao entre horarios de inicio e de fim no compromisso novo
     considerando o  compromisso anterior e o proximo, caso existam. */
-/*OK*/
+/*ARRUMAR*/
 int marca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
     dia_t *aux_dia, *novo_dia;
     compromisso_t *aux_compr;
@@ -108,7 +113,6 @@ int marca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
         
         if (aux_dia -> dia == dia){    
             free(novo_dia);
-            printf("apos liberar o dia, o compromisso é:ID %d, ini %d, fim %d\n", compr -> id, compr -> inicio, compr -> fim);
             aux_compr = aux_dia -> comprs;
 
             /*caso onde o compromisso é antes de qualquer um*/
