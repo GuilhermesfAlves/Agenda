@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 #define JAN 1
 #define DEZ 12
 #define num_func 30
@@ -86,6 +87,9 @@ int marca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
     dia_t *aux_dia, *novo_dia;
     compromisso_t *aux_compr;
 
+    imprime_agenda_mes(agenda);
+
+
     if (!(novo_dia = malloc(sizeof(dia_t))))
         return 0;
 
@@ -123,8 +127,11 @@ int marca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
 
             else {
                 /*corredor de compromissos*/
-                while ((aux_compr -> prox) && (compr -> inicio > aux_compr -> prox -> inicio))
+                while ((aux_compr -> prox) && (compr -> inicio > aux_compr -> prox -> inicio)){
                     aux_compr = aux_compr -> prox;
+                    printf("id: %d\n",aux_compr -> id );
+                    sleep(2);
+                }
 
                 compr -> prox = aux_compr -> prox;
                 aux_compr -> prox = compr;
@@ -172,10 +179,13 @@ int desmarca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr)
     if (!aux_dia)
         return 0;
         
+    /*caso onde nao e o primeiro dia do mes*/
     if (aux_dia -> dia != dia){
+        /*corredor de dias*/
         while ((aux_dia -> prox) && (aux_dia -> prox -> dia != dia))
             aux_dia = aux_dia -> prox;
         
+        /*nao achou o dia*/
         if (!aux_dia -> prox)
             return 0;
         
@@ -184,6 +194,7 @@ int desmarca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr)
         aux_compr = aux_dia -> prox -> comprs;
         if (!aux_compr)
             return 0;
+
         if (aux_compr != compr){
             while ((aux_compr -> prox) && (aux_compr -> prox != compr))
                 aux_compr = aux_compr -> prox;
@@ -209,12 +220,16 @@ int desmarca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr)
             }
         }
     }
+    /*caso onde eh o primeiro dia do mes*/
     else {
         aux_compr = aux_dia -> comprs;
+        /*caso onde nao eh o primeiro compromisso do dia*/
         if (aux_compr != compr){
+            /*corredor de compromissos*/
             while ((aux_compr -> prox) && (aux_compr -> prox != compr))
                 aux_compr = aux_compr -> prox;
             
+            /*nao achou os compromissos*/
             if (!aux_compr -> prox)
                 return 0;
             
