@@ -101,19 +101,46 @@ void set_element(char *vet[], int dias[]){
     printf("sim set_element\n");
 }
 
+void tenta_encher_agenda(agenda_t *agenda){
+    horario_compromisso_t hc;
+    compromisso_t *aux_compr;
+
+    for (int i=0; i< 30; i++){
+        hc.ini_h = i;
+        hc.ini_m = 0;
+        hc.fim_h = i+1;
+        hc.fim_m = 0;
+        marca_compromisso_agenda(agenda, 01, cria_compromisso(hc, i, NULL));
+        aux_compr = agenda -> ptr_mes_atual -> dias -> comprs;
+        do {
+            printf("ID: %.2d, hc ini: %.3d, hc fim %.3d\n", id_compr(aux_compr), aux_compr -> inicio, aux_compr -> fim);
+            aux_compr = aux_compr -> prox;
+        } while (aux_compr);
+        printf("\n");
+    }
+    printf("\n");
+}
+
 int main(){
     agenda_t ag, *agenda;
     compromisso_t *compromisso[num_taref];
     char *vet[num_taref];
     int dias[days];
 
+    printf("tamanho de blocos: compr:%ld, dia:%ld, mes:%ld, agenda:%ld\n", sizeof(compromisso_t), sizeof(dia_t), sizeof(mes_t), sizeof(agenda_t));
+
+
     agenda = &ag;
-    set_element(vet, dias);
+    //set_element(vet, dias);
  
     if (!inicia_agendas(agenda))
         printf("inicia a agenda errado");
     printf("iniciou agenda\n");
 
+    tenta_encher_agenda(agenda);
+    imprime_agenda_mes(agenda);
+
+/*
     if (!testa_insere(agenda, vet, dias, compromisso)){
         printf("problema testa_insere\n");
         return 1;
@@ -125,7 +152,7 @@ int main(){
         printf("problema testa_remove\n");
         return 1;
     }
-
+*/
     printf ("tudo certo\n");
     destroi_agenda(agenda);
     return 0;

@@ -35,14 +35,19 @@ void destroi_agenda(agenda_t* agenda){
     compromisso_t *aux_compr;
     
     aux_mes = agenda -> ptr_mes_atual -> prox; 
-    while (aux_mes != agenda -> ptr_mes_atual){
+    printf("excluindo dia do mes %d\n", aux_mes -> mes);
+    while (aux_mes){
         aux_dia = aux_mes -> dias;
         
         while (aux_dia){
             aux_compr = aux_dia -> comprs;
         
-            while (aux_compr)
-                free(prox_compr(aux_compr));
+            while (aux_compr){
+                aux_dia -> comprs = aux_dia -> comprs -> prox;
+                printf("exlcuindo: %d\n", id_compr(aux_compr));
+                free(aux_compr);
+                aux_compr = aux_dia -> comprs;
+            }
         
             aux_mes -> dias = aux_mes -> dias -> prox;
             free(aux_dia);
@@ -51,10 +56,13 @@ void destroi_agenda(agenda_t* agenda){
 
         aux_mes -> ant -> prox = aux_mes -> prox;
         free(aux_mes);
-        aux_mes = agenda -> ptr_mes_atual -> prox;
+        if (agenda -> ptr_mes_atual)
+            aux_mes = agenda -> ptr_mes_atual -> prox;
+        else{
+            aux_mes = NULL;
+        }
     }
     
-    free(agenda -> ptr_mes_atual);
     agenda -> ptr_mes_atual = NULL;
     agenda -> mes_atual = 0;
 }
@@ -84,6 +92,7 @@ int marca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
     if ((!aux_dia) || (aux_dia -> dia > dia)){
         novo_dia -> prox = aux_dia;
         agenda -> ptr_mes_atual -> dias = novo_dia;
+        novo_dia -> comprs -> prox = NULL;
     }
 
     else {
@@ -99,6 +108,7 @@ int marca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
         
         if (aux_dia -> dia == dia){    
             free(novo_dia);
+            printf("apos liberar o dia, o compromisso é:ID %d, ini %d, fim %d\n", compr -> id, compr -> inicio, compr -> fim);
             aux_compr = aux_dia -> comprs;
 
             /*caso onde o compromisso é antes de qualquer um*/
@@ -386,9 +396,6 @@ horario_compromisso_t hc_compr(compromisso_t* compr){
 
 /*OK*/
 int id_compr(compromisso_t* compr){
-    
-    if (!compr)
-        return -5;
 
     return compr -> id;
 }
