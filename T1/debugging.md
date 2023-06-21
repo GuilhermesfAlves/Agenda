@@ -15,3 +15,7 @@ funcionario 29
     13/01 08:15 12:15 ja tem
     25/01
     13/01 12:00 15:00 tenta colocar
+
+
+caso eu queira desalocar um compromisso ou a descrição de um compromisso
+    como fazer
