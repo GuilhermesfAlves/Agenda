@@ -96,6 +96,7 @@ int lista_remove_ordenado (lista_t *l, elemento_t *elemento){
         free(aux -> prox);
         aux -> prox = aux2;
     }
+    
     /*caso onde é a primeira posição da lista*/
     else {
         aux2 = aux -> prox;
