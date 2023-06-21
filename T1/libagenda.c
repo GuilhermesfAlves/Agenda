@@ -87,9 +87,6 @@ int marca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
     dia_t *aux_dia, *novo_dia;
     compromisso_t *aux_compr;
 
-    imprime_agenda_mes(agenda);
-
-
     if (!(novo_dia = malloc(sizeof(dia_t))))
         return 0;
 
@@ -174,6 +171,8 @@ int desmarca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr)
 int desmarca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
     compromisso_t *aux_compr, *aux2_compr;
     dia_t *aux_dia, *aux2_dia;
+
+    printf("\ndesmarcando: id: %.2d, dia %.2d, descr: %s \n",id_compr(compr), dia, compr -> descricao);
 
     aux_dia = agenda -> ptr_mes_atual -> dias;
     if (!aux_dia)
