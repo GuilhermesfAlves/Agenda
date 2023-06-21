@@ -87,15 +87,18 @@ int marca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
     }
 
     else {
-        /*corredor de dias*/
-        while ((aux_dia -> prox) && (aux_dia -> prox -> dia < dia))
+        if (aux_dia -> dia != dia){
+            /*corredor de dias*/
+            while ((aux_dia -> prox) && (aux_dia -> prox -> dia < dia))
+                aux_dia = aux_dia -> prox;
+        }
+
+        /*novo compromisso em um dia ja alocado*/
+        if ((aux_dia -> prox) && (dia == aux_dia -> prox -> dia))
             aux_dia = aux_dia -> prox;
         
-        /*novo compromisso em um dia ja alocado*/
-        if ((aux_dia -> prox) && (dia == aux_dia -> prox -> dia)){
-            
-            aux_dia = aux_dia -> prox;
-            //free(novo_dia);
+        if (aux_dia -> dia == dia){    
+            free(novo_dia);
             aux_compr = aux_dia -> comprs;
 
             /*caso onde o compromisso é antes de qualquer um*/
