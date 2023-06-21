@@ -108,6 +108,14 @@ int inicia_agendas(agenda_t *agenda){
     return 1;
 }
 
+void imprime_agenda_de_geral(func_t funcionarios[]){
+
+    for (int i=0; i<num_func; i++){
+        printf("funcionario %.2d\n", i);
+        imprime_agenda_mes(&funcionarios[i].agenda);
+    }
+}
+
 void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
     int lider_num, dia, id, flag, qtd_func, i_func, cont;
     horario_compromisso_t hc_compr;
@@ -118,6 +126,8 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
 
         printf("M %.2d\n", mes);
         for (int reun=0; reun<num_taref; reun++){
+            imprime_agenda_de_geral(funcionarios);
+            printf("\n\n\n");
 
             do {
                 lider_num = ALEAT(0, num_func - 1);
@@ -203,7 +213,7 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
             }
             else {
                 printf("\tLIDER INDISPONIVEL"); 
-                desmarca_compromisso_agenda(&funcionarios[i_func].agenda, dia, compr);
+                desmarca_compromisso_agenda(&funcionarios[lider_num].agenda, dia, compr);
             }
             printf("\n");
         }
