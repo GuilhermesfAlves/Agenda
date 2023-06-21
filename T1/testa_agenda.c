@@ -101,7 +101,7 @@ void set_element(char *vet[], int dias[]){
     printf("sim set_element\n");
 }
 
-void tenta_encher_agenda(agenda_t *agenda){
+void tenta_encher_agenda(agenda_t *agenda, int d){
     horario_compromisso_t hc;
     compromisso_t *aux_compr;
 
@@ -110,7 +110,7 @@ void tenta_encher_agenda(agenda_t *agenda){
         hc.ini_m = 0;
         hc.fim_h = i+1;
         hc.fim_m = 0;
-        marca_compromisso_agenda(agenda, 01, cria_compromisso(hc, i, NULL));
+        marca_compromisso_agenda(agenda, d, cria_compromisso(hc, i, NULL));
         aux_compr = agenda -> ptr_mes_atual -> dias -> comprs;
         do {
             printf("ID: %.2d, hc ini: %.3d, hc fim %.3d\n", id_compr(aux_compr), aux_compr -> inicio, aux_compr -> fim);
@@ -137,7 +137,9 @@ int main(){
         printf("inicia a agenda errado");
     printf("iniciou agenda\n");
 
-    tenta_encher_agenda(agenda);
+    for (int d=0; d<30; d++){
+        tenta_encher_agenda(agenda,d);
+    }
     imprime_agenda_mes(agenda);
 
 /*
