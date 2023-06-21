@@ -61,7 +61,7 @@ int main(){
 int ALEAT(int min, int max){
 
     if (max + 1 - min == 0)
-        return rand() + min;
+        return 0 + min;
 
     return (rand() % (max + 1 - min)) + min;
 }
@@ -150,11 +150,11 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
                 }   
             }
             flag = marca_compromisso_agenda(&funcionarios[lider_num].agenda, dia, compr);
-            if (!flag){
+            if (flag == 0){
                 printf("erro malloc novo compromisso em agenda\n");
                 return;
             }
-            else if (flag != -1){
+            else if (flag == 1){
 
                 qtd_func = ALEAT(2,6);
                 cont = 0;
@@ -190,6 +190,7 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
                         }
                         else {
                             printf(" IN");
+                            desmarca_compromisso_agenda(&funcionarios[i_func].agenda, dia, compr);
                         }
                     }
                 }
@@ -201,7 +202,8 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
                 }
             }
             else {
-                printf("\tLIDER INDISPONIVEL");
+                printf("\tLIDER INDISPONIVEL"); 
+                desmarca_compromisso_agenda(&funcionarios[i_func].agenda, dia, compr);
             }
             printf("\n");
         }
