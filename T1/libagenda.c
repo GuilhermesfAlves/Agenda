@@ -152,8 +152,8 @@ int marca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
       1: em caso de sucesso
       0: caso nao tenha encontrado o compr */
 int desmarca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
-    compromisso_t *aux_compr;
-    dia_t *aux_dia;
+    compromisso_t *aux_compr, *aux2_compr;
+    dia_t *aux_dia, *aux2_dia;
 
     aux_dia = agenda -> ptr_mes_atual -> dias;
     if (!aux_dia)
@@ -181,15 +181,25 @@ int desmarca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr)
             if (!aux_compr -> prox)
                 return 0;
             
-            aux_compr -> prox = aux_compr -> prox -> prox;
+            /*liberação de data*/
+            aux2_compr = aux_compr -> prox -> prox;
+            free(aux_compr -> prox -> descricao);
+            free(aux_compr -> prox);
+            aux_compr -> prox = aux2_compr;
         }
         /*primeiro compromisso do dia*/
         else {
+            /*liberação de data*/
+            free(aux_compr -> descricao);
+            free(aux_compr);
             aux_dia -> prox -> comprs = aux_compr -> prox;
-        
+
+            /*libera o dia se todos os compromissos nele ja tiverem
+            * sido liberados*/
             if (!aux_dia -> prox -> comprs){
+                aux2_dia = aux_dia -> prox -> prox; 
                 free(aux_dia -> prox);
-                aux_dia -> prox = aux_dia -> prox -> prox;
+                aux_dia -> prox = aux2_dia;
             }
         }
     }
@@ -207,11 +217,16 @@ int desmarca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr)
             if (!aux_compr -> prox)
                 return 0;
             
-            aux_compr -> prox = aux_compr -> prox -> prox;
+            aux2_compr = aux_compr -> prox -> prox;
+            free(aux_compr -> prox -> descricao);
+            free(aux_compr -> prox);
+            aux_compr -> prox = aux2_compr;
         }
         /*primeiro compromisso do dia*/
         else {
             aux_dia -> comprs = aux_compr -> prox;
+            free(aux_compr -> descricao);
+            free(aux_compr);
 
             if (!aux_dia -> comprs){
                 agenda -> ptr_mes_atual -> dias = aux_dia -> prox;

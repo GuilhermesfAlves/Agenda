@@ -216,8 +216,6 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
                         else {
                             printf(" IN");
                             desmarca_compromisso_agenda(&funcionarios[i_func].agenda, dia, compr_func);
-                            free(descr_func);
-                            free(compr_func);
                         }
                     }
                 }
@@ -226,8 +224,6 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
                 if (!cont){
                     printf(" VAZIA");
                     desmarca_compromisso_agenda(&funcionarios[lider_num].agenda, dia, compr_lider);
-                    free(descr_lider);
-                    free(compr_lider);
                 }
             }
             /*flag == -1*/
@@ -235,8 +231,6 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
             else {
                 printf("\tLIDER INDISPONIVEL");
                 desmarca_compromisso_agenda(&funcionarios[lider_num].agenda, dia, compr_lider);
-                free(descr_lider);
-                free(compr_lider);
             }
             printf("\n");
         }
