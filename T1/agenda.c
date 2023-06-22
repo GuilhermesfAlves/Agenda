@@ -56,7 +56,7 @@ int main(){
 
     }
 */
-    //destroi_todas(funcionarios);
+    destroi_todas(funcionarios);
 
     return 0;
 }
@@ -131,7 +131,7 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
     int lider_num, dia, id, flag, qtd_func, i_func, cont;
     horario_compromisso_t hc_compr;
     compromisso_t *compr_lider, *compr_func;
-    char *descricao;
+    char *descr_lider, *descr_func;
 
     for (int mes=JAN; mes<=DEZ; mes++){
 
@@ -144,7 +144,7 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
                 lider_num = ALEAT(0, num_func - 1);
             } while((funcionarios[lider_num].lideranca < 30) || (funcionarios[lider_num].lideranca > 70));
 
-            if (!(descricao = malloc(51*sizeof(char))))
+            if (!(descr_lider = malloc(51*sizeof(char))))
                 return;
 
             hc_compr.ini_h = ALEAT(8, 12);
@@ -153,10 +153,10 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
             hc_compr.fim_m = hc_compr.ini_m;
             dia = ALEAT(1, 31);
             id = ALEAT(0, reun - 1);
-            sprintf(descricao, "REUNIR L %.2d %.2d/%.2d %.2d:%.2d %.2d:%.2d T %.2d", lider_num, dia, mes, hc_compr.ini_h, hc_compr.ini_m, hc_compr.fim_h, hc_compr.fim_m, reun);
+            sprintf(descr_lider, "REUNIR L %.2d %.2d/%.2d %.2d:%.2d %.2d:%.2d T %.2d", lider_num, dia, mes, hc_compr.ini_h, hc_compr.ini_m, hc_compr.fim_h, hc_compr.fim_m, reun);
 
-            printf("%s", descricao);
-            compr_lider = cria_compromisso(hc_compr, id, descricao);
+            printf("%s", descr_lider);
+            compr_lider = cria_compromisso(hc_compr, id, descr_lider);
             if (!compr_lider){
                 printf("erro malloc compr\n");
                 return;
@@ -186,7 +186,11 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
                     if (funcionarios[lider_num].lideranca > (funcionarios[i_func].lideranca + ALEAT(-20,10))){
                         printf(" %.2d:", i_func);
 
-                        compr_func = cria_compromisso(hc_compr, id, descricao);
+                        if (!(descr_func = malloc(51*sizeof(char))))
+                            printf("erro malloc descricao func");
+                        sprintf(descr_func, "REUNIR L %.2d %.2d/%.2d %.2d:%.2d %.2d:%.2d T %.2d", lider_num, dia, mes, hc_compr.ini_h, hc_compr.ini_m, hc_compr.fim_h, hc_compr.fim_m, reun);
+
+                        compr_func = cria_compromisso(hc_compr, id, descr_func);
 
                         /*caso o funcionario esteja com a agenda ainda apontando para outro mes anterior,
                         * este while acertaria o mes certo do compromisso*/
@@ -212,6 +216,7 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
                         else {
                             printf(" IN");
                             desmarca_compromisso_agenda(&funcionarios[i_func].agenda, dia, compr_func);
+                            free(descr_func);
                             free(compr_func);
                         }
                     }
@@ -221,7 +226,7 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
                 if (!cont){
                     printf(" VAZIA");
                     desmarca_compromisso_agenda(&funcionarios[lider_num].agenda, dia, compr_lider);
-                    free(compr_lider -> descricao);
+                    free(descr_lider);
                     free(compr_lider);
                 }
             }
@@ -230,13 +235,10 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
             else {
                 printf("\tLIDER INDISPONIVEL");
                 desmarca_compromisso_agenda(&funcionarios[lider_num].agenda, dia, compr_lider);
-                free(compr_lider -> descricao);
+                free(descr_lider);
                 free(compr_lider);
             }
             printf("\n");
         }
-        imprime_agenda_de_geral(funcionarios);
-        destroi_todas(funcionarios);
-        return;
     }
 }

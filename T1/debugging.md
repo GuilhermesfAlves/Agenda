@@ -44,6 +44,10 @@ perdido indiretamente:
     blocos de 51 -> descricao
 
 
-
 perdido definitivamente
     blocos de 51 -> descricao
+
+perdido definitivamente
+    blocos de 24 -> dia
+perdido indiretamente
+    blocos em dia

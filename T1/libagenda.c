@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <unistd.h>
 #define JAN 1
 #define DEZ 12
 #define num_func 30
@@ -46,7 +45,7 @@ void destroi_agenda(agenda_t* agenda){
         
             while (aux_compr){
                 aux_dia -> comprs = aux_compr -> prox;
-
+                free(aux_compr -> descricao);
                 free(aux_compr);
                 aux_compr = aux_dia -> comprs;
             }
@@ -147,19 +146,6 @@ int marca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
     return 1;
 }
 
-/*tentativa 2 sem sucesso
-int desmarca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
-    compromisso_t *aux_compr, *aux2_compr;
-    dia_t *aux_dia, *aux2_dia;
-
-    if (!(aux_compr = compr_agenda(agenda, dia)))
-        return 0; nao achou o dia em questão*/
-    
-    /*compromisso na primeira posição*/
-    /*erro: como alterar pra onde o primeiro compromisso do dia aponta
-    * se eu não tenho o dia */
-
-
 /* Desmarca o compromisso compr da agenda:
    O parametro compr eh um ponteiro para um compromisso existente da agenda.
    valores de retorno possiveis:
@@ -167,13 +153,13 @@ int desmarca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr)
       0: caso nao tenha encontrado o compr */
 int desmarca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
     compromisso_t *aux_compr;
-    dia_t *aux_dia, *aux2_dia;
+    dia_t *aux_dia;
 
     aux_dia = agenda -> ptr_mes_atual -> dias;
     if (!aux_dia)
         return 0;
         
-    /*caso onde nao e o primeiro dia do mes*/
+    /*caso onde nao eh o primeiro dia do mes*/
     if (aux_dia -> dia != dia){
         /*corredor de dias*/
         while ((aux_dia -> prox) && (aux_dia -> prox -> dia != dia))
@@ -183,7 +169,6 @@ int desmarca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr)
         if (!aux_dia -> prox)
             return 0;
         
-        aux2_dia = aux_dia -> prox -> prox;
         /*logica para dia diferente do primeiro*/
         aux_compr = aux_dia -> prox -> comprs;
         if (!aux_compr)
@@ -204,10 +189,11 @@ int desmarca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr)
         
             if (!aux_dia -> prox -> comprs){
                 free(aux_dia -> prox);
-                aux_dia -> prox = aux2_dia;
+                aux_dia -> prox = aux_dia -> prox -> prox;
             }
         }
     }
+
     /*caso onde eh o primeiro dia do mes*/
     else {
         aux_compr = aux_dia -> comprs;
@@ -228,9 +214,8 @@ int desmarca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr)
             aux_dia -> comprs = aux_compr -> prox;
 
             if (!aux_dia -> comprs){
-                aux2_dia = aux_dia -> prox;
+                agenda -> ptr_mes_atual -> dias = aux_dia -> prox;
                 free(aux_dia);
-                agenda -> ptr_mes_atual -> dias = aux2_dia;
             }
         }
     }
