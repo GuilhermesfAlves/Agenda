@@ -28,6 +28,8 @@ int ALEAT(int min, int max);
 /*função de inicialização aleatória de cada funcionario e tarefa*/
 void set_func_e_taref(func_t funcionarios[], taref_t tarefas[]);
 
+void destroi_todas(func_t funcionarios[]);
+
 void imprime_status(func_t funcionarios[]);
 
 /*função para inicializar o mes de janeiro na agenda de cada funcionario*/
@@ -45,16 +47,25 @@ int main(){
     /*Inicialização*/
     srand((unsigned)time(0));
     set_func_e_taref(funcionarios, tarefas);
-    imprime_status(funcionarios);
+    //imprime_status(funcionarios);
     marca_reunioes(funcionarios, tarefas);
-
-    /*TRABALHAR*/
+/*
+    TRABALHAR
     for (int i=0; i<num_func; i++){
         prim_mes_agenda(&funcionarios[i].agenda);
 
     }
+*/
+    //destroi_todas(funcionarios);
 
     return 0;
+}
+
+void destroi_todas(func_t funcionarios[]){
+
+    for (int i=0; i < num_func; i++){
+        destroi_agenda(&funcionarios[i].agenda);
+    }
 }
 
 /*função que aleatoriza numeros entre um minimo e máximo*/
@@ -119,20 +130,18 @@ void imprime_agenda_de_geral(func_t funcionarios[]){
 void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
     int lider_num, dia, id, flag, qtd_func, i_func, cont;
     horario_compromisso_t hc_compr;
-    compromisso_t *compr;
+    compromisso_t *compr_lider, *compr_func;
     char *descricao;
 
     for (int mes=JAN; mes<=DEZ; mes++){
 
         printf("M %.2d\n", mes);
         for (int reun=0; reun<num_taref; reun++){
-            imprime_agenda_de_geral(funcionarios);
-            printf("\n\n\n");
+            //imprime_agenda_de_geral(funcionarios);
+            //printf("\n\n\n");
 
             do {
                 lider_num = ALEAT(0, num_func - 1);
-                printf("lider: %d  ", lider_num);
-                printf("lideranca: %d \n", funcionarios[lider_num].lideranca);
             } while((funcionarios[lider_num].lideranca < 30) || (funcionarios[lider_num].lideranca > 70));
 
             if (!(descricao = malloc(51*sizeof(char))))
@@ -147,8 +156,8 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
             sprintf(descricao, "REUNIR L %.2d %.2d/%.2d %.2d:%.2d %.2d:%.2d T %.2d", lider_num, dia, mes, hc_compr.ini_h, hc_compr.ini_m, hc_compr.fim_h, hc_compr.fim_m, reun);
 
             printf("%s", descricao);
-            compr = cria_compromisso(hc_compr, id, descricao);
-            if (!compr){
+            compr_lider = cria_compromisso(hc_compr, id, descricao);
+            if (!compr_lider){
                 printf("erro malloc compr\n");
                 return;
             }
@@ -159,7 +168,7 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
                     break;
                 }   
             }
-            flag = marca_compromisso_agenda(&funcionarios[lider_num].agenda, dia, compr);
+            flag = marca_compromisso_agenda(&funcionarios[lider_num].agenda, dia, compr_lider);
             if (flag == 0){
                 printf("erro malloc novo compromisso em agenda\n");
                 return;
@@ -177,6 +186,8 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
                     if (funcionarios[lider_num].lideranca > (funcionarios[i_func].lideranca + ALEAT(-20,10))){
                         printf(" %.2d:", i_func);
 
+                        compr_func = cria_compromisso(hc_compr, id, descricao);
+
                         /*caso o funcionario esteja com a agenda ainda apontando para outro mes anterior,
                         * este while acertaria o mes certo do compromisso*/
                         while (mes != funcionarios[i_func].agenda.mes_atual){
@@ -186,10 +197,10 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
                             }
                         }
 
-                        flag = marca_compromisso_agenda(&funcionarios[i_func].agenda, dia, compr);
+                        flag = marca_compromisso_agenda(&funcionarios[i_func].agenda, dia, compr_func);
                         /*caso o retorno de marca_compromisso_agenda seja -1, ou seja uma intersecção
                         * o compromisso não sera marcado com este funcionario*/    
-                        if (!flag){
+                        if (flag == 0){
                             printf("erro malloc novo compromisso em agenda\n");
                             return;
                         }
@@ -200,22 +211,32 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
                         }
                         else {
                             printf(" IN");
-                            desmarca_compromisso_agenda(&funcionarios[i_func].agenda, dia, compr);
+                            desmarca_compromisso_agenda(&funcionarios[i_func].agenda, dia, compr_func);
+                            free(compr_func);
                         }
                     }
                 }
                 /*caso nenhum funcionario se apresente disponivel para a reunião, o lider
                 * desmarca esta reunião*/
                 if (!cont){
-                    desmarca_compromisso_agenda(&funcionarios[lider_num].agenda, dia, compr);
                     printf(" VAZIA");
+                    desmarca_compromisso_agenda(&funcionarios[lider_num].agenda, dia, compr_lider);
+                    free(compr_lider -> descricao);
+                    free(compr_lider);
                 }
             }
+            /*flag == -1*/
+            /*caso o lider nao possa marcar essa reunião*/
             else {
-                printf("\tLIDER INDISPONIVEL"); 
-                desmarca_compromisso_agenda(&funcionarios[lider_num].agenda, dia, compr);
+                printf("\tLIDER INDISPONIVEL");
+                desmarca_compromisso_agenda(&funcionarios[lider_num].agenda, dia, compr_lider);
+                free(compr_lider -> descricao);
+                free(compr_lider);
             }
             printf("\n");
         }
+        imprime_agenda_de_geral(funcionarios);
+        destroi_todas(funcionarios);
+        return;
     }
 }

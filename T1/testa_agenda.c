@@ -121,6 +121,42 @@ void tenta_encher_agenda(agenda_t *agenda, int d){
     printf("\n");
 }
 
+int tenta_sobrepor(agenda_t *agenda){
+    int dia, flag;
+    horario_compromisso_t hc;
+    compromisso_t *compr;
+
+    dia = ALEAT(0,29);
+    hc.ini_h = ALEAT(0,29);
+    hc.ini_m = 30;
+    hc.fim_h = hc.ini_h + 1;
+    hc.fim_m = 0;
+
+    compr = cria_compromisso(hc, -10, NULL);
+    flag = marca_compromisso_agenda(agenda, dia, compr);
+    if (flag == 0){
+        printf("erro de malloc");
+        return 0;
+    }
+    else if (flag == -1){
+        printf("intersecsao com compromisso no dia %d ini: %d\n", dia, compr -> inicio);
+        flag = desmarca_compromisso_agenda(agenda, dia, compr);
+        if (flag == 0){
+            printf("erro desmarca compr\n");
+            return 0;
+        }
+        else{
+            printf("removeu certo\n");
+            free(compr);
+            return 1;
+        }
+    }
+    else {
+        printf("marcou sem problema\n");
+        return 1;
+    }
+}
+
 int main(){
     agenda_t ag, *agenda;
     compromisso_t *compromisso[num_taref];
@@ -133,6 +169,7 @@ int main(){
     agenda = &ag;
     //set_element(vet, dias);
  
+    srand(time(0));
     if (!inicia_agendas(agenda))
         printf("inicia a agenda errado");
     printf("iniciou agenda\n");
@@ -141,7 +178,12 @@ int main(){
         tenta_encher_agenda(agenda,d);
     }
     imprime_agenda_mes(agenda);
+    if (tenta_sobrepor(agenda))
+        printf("certo\n");
+    else 
+        printf("errado\n");
 
+    imprime_agenda_mes(agenda);
 /*
     if (!testa_insere(agenda, vet, dias, compromisso)){
         printf("problema testa_insere\n");

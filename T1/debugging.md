@@ -19,3 +19,31 @@ funcionario 29
 
 caso eu queira desalocar um compromisso ou a descrição de um compromisso
     como fazer
+
+
+funcionario 07
+    dia 13  t 12
+    dia 22  t 05
+    dia 26  t 09
+
+    tenta adicionar dia 16  t 14
+
+eu deveria criar um compromisso diferente para cada agenda diferente...
+
+tamanho de blocos:
+    compromisso: 32
+    dia: 24
+    mes: 32
+    agenda 16
+    descricao 51
+
+perdido definitivamente:
+    blocos de 51 -> descricao
+    blocos de 32 -> compromisso
+perdido indiretamente:
+    blocos de 51 -> descricao
+
+
+
+perdido definitivamente
+    blocos de 51 -> descricao

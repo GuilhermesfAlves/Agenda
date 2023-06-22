@@ -119,16 +119,13 @@ int marca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
             /*caso onde o compromisso é antes de qualquer um*/
             if ((!aux_compr) || (compr -> inicio < aux_compr -> inicio)){
                 compr -> prox = aux_compr;
-                aux_dia -> comprs = compr;
+                aux_dia -> comprs = compr; 
             }
 
             else {
                 /*corredor de compromissos*/
-                while ((aux_compr -> prox) && (compr -> inicio > aux_compr -> prox -> inicio)){
+                while ((aux_compr -> prox) && (compr -> inicio > aux_compr -> prox -> inicio))
                     aux_compr = aux_compr -> prox;
-                    printf("id: %d\n",aux_compr -> id );
-                    sleep(2);
-                }
 
                 compr -> prox = aux_compr -> prox;
                 aux_compr -> prox = compr;
@@ -169,10 +166,8 @@ int desmarca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr)
       1: em caso de sucesso
       0: caso nao tenha encontrado o compr */
 int desmarca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
-    compromisso_t *aux_compr, *aux2_compr;
+    compromisso_t *aux_compr;
     dia_t *aux_dia, *aux2_dia;
-
-    printf("\ndesmarcando: id: %.2d, dia %.2d, descr: %s \n",id_compr(compr), dia, compr -> descricao);
 
     aux_dia = agenda -> ptr_mes_atual -> dias;
     if (!aux_dia)
@@ -201,17 +196,11 @@ int desmarca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr)
             if (!aux_compr -> prox)
                 return 0;
             
-            aux2_compr = aux_compr -> prox -> prox;
-            free(aux_compr -> prox -> descricao);
-            free(aux_compr -> prox);
-            aux_compr -> prox = aux2_compr;
+            aux_compr -> prox = aux_compr -> prox -> prox;
         }
         /*primeiro compromisso do dia*/
         else {
-            aux2_compr = aux_compr -> prox;
-            free(aux_compr -> descricao);
-            free(aux_compr);
-            aux_dia -> prox -> comprs = aux2_compr;
+            aux_dia -> prox -> comprs = aux_compr -> prox;
         
             if (!aux_dia -> prox -> comprs){
                 free(aux_dia -> prox);
@@ -232,17 +221,11 @@ int desmarca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr)
             if (!aux_compr -> prox)
                 return 0;
             
-            aux2_compr = aux_compr -> prox -> prox;
-            free(aux_compr -> prox -> descricao);
-            free(aux_compr -> prox);
-            aux_compr -> prox = aux2_compr;
+            aux_compr -> prox = aux_compr -> prox -> prox;
         }
         /*primeiro compromisso do dia*/
         else {
-            aux2_compr = aux_compr -> prox;
-            free(aux_compr -> descricao);
-            free(aux_compr);
-            aux_dia -> comprs = aux2_compr;
+            aux_dia -> comprs = aux_compr -> prox;
 
             if (!aux_dia -> comprs){
                 aux2_dia = aux_dia -> prox;
