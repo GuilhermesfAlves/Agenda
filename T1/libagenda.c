@@ -97,20 +97,16 @@ int marca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
     if ((!aux_dia) || (aux_dia -> dia > dia)){
         novo_dia -> prox = aux_dia;
         agenda -> ptr_mes_atual -> dias = novo_dia;
-        novo_dia -> comprs -> prox = NULL;
     }
 
     else {
         if (aux_dia -> dia != dia){
             /*corredor de dias*/
-            while ((aux_dia -> prox) && (aux_dia -> prox -> dia < dia))
+            while ((aux_dia -> prox) && (aux_dia -> prox -> dia <= dia))
                 aux_dia = aux_dia -> prox;
         }
 
         /*novo compromisso em um dia ja alocado*/
-        if ((aux_dia -> prox) && (dia == aux_dia -> prox -> dia))
-            aux_dia = aux_dia -> prox;
-        
         if (aux_dia -> dia == dia){    
             free(novo_dia);
             aux_compr = aux_dia -> comprs;
@@ -139,6 +135,7 @@ int marca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
             }
         }
         else {
+            /*compromisso em um dia ainda nao alocado*/
             novo_dia -> prox = aux_dia -> prox;
             aux_dia -> prox = novo_dia;
         } 
@@ -190,9 +187,9 @@ int desmarca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr)
         /*primeiro compromisso do dia*/
         else {
             /*liberação de data*/
+            aux_dia -> prox -> comprs = aux_compr -> prox;
             free(aux_compr -> descricao);
             free(aux_compr);
-            aux_dia -> prox -> comprs = aux_compr -> prox;
 
             /*libera o dia se todos os compromissos nele ja tiverem
             * sido liberados*/

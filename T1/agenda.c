@@ -37,7 +37,7 @@ int inicia_agendas(agenda_t *agenda);
 
 void marca_reunioes(func_t funcionarios[], taref_t tarefas[]);
 
-
+void trabalha(func_t funcionarios[], taref_t tarefas[]);
 
 
 int main(){
@@ -49,16 +49,16 @@ int main(){
     set_func_e_taref(funcionarios, tarefas);
     //imprime_status(funcionarios);
     marca_reunioes(funcionarios, tarefas);
-/*
-    TRABALHAR
-    for (int i=0; i<num_func; i++){
-        prim_mes_agenda(&funcionarios[i].agenda);
 
-    }
-*/
+    trabalha(funcionarios, tarefas);
     destroi_todas(funcionarios);
 
     return 0;
+}
+
+void incrementa_exp(func_t funcionarios[], int i){
+    if (funcionarios[i].experiencia < 100)
+        funcionarios[i].experiencia++;
 }
 
 void destroi_todas(func_t funcionarios[]){
@@ -70,9 +70,6 @@ void destroi_todas(func_t funcionarios[]){
 
 /*função que aleatoriza numeros entre um minimo e máximo*/
 int ALEAT(int min, int max){
-
-    if (max + 1 - min == 0)
-        return 0 + min;
 
     return (rand() % (max + 1 - min)) + min;
 }
@@ -123,7 +120,10 @@ void imprime_agenda_de_geral(func_t funcionarios[]){
 
     for (int i=0; i<num_func; i++){
         printf("funcionario %.2d\n", i);
-        imprime_agenda_mes(&funcionarios[i].agenda);
+        prim_mes_agenda(&funcionarios[i].agenda);
+        do {
+            imprime_agenda_mes(&funcionarios[i].agenda);
+        } while (prox_mes_agenda(&funcionarios[i].agenda) != JAN);
     }
 }
 
@@ -137,8 +137,6 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
 
         printf("M %.2d\n", mes);
         for (int reun=0; reun<num_taref; reun++){
-            //imprime_agenda_de_geral(funcionarios);
-            //printf("\n\n\n");
 
             do {
                 lider_num = ALEAT(0, num_func - 1);
@@ -149,15 +147,15 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
 
             hc_compr.ini_h = ALEAT(8, 12);
             hc_compr.ini_m = ALEAT(0, 3) * 15;
-            hc_compr.fim_h = hc_compr.ini_h + ALEAT (1, 4);
+            hc_compr.fim_h = hc_compr.ini_h + ALEAT(1, 4);
             hc_compr.fim_m = hc_compr.ini_m;
             dia = ALEAT(1, 31);
-            id = ALEAT(0, reun - 1);
-            sprintf(descr_lider, "REUNIR L %.2d %.2d/%.2d %.2d:%.2d %.2d:%.2d T %.2d", lider_num, dia, mes, hc_compr.ini_h, hc_compr.ini_m, hc_compr.fim_h, hc_compr.fim_m, reun);
+            id = ALEAT(0, num_taref - 1);
+            sprintf(descr_lider, "REUNIR L %.2d %.2d/%.2d %.2d:%.2d %.2d:%.2d T %.2d", lider_num, dia, mes, hc_compr.ini_h, hc_compr.ini_m, hc_compr.fim_h, hc_compr.fim_m, id);
 
             printf("%s", descr_lider);
-            compr_lider = cria_compromisso(hc_compr, id, descr_lider);
-            if (!compr_lider){
+
+            if (!(compr_lider = cria_compromisso(hc_compr, id, descr_lider))){
                 printf("erro malloc compr\n");
                 return;
             }
@@ -177,18 +175,19 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
 
                 qtd_func = ALEAT(2,6);
                 cont = 0;
-                printf("\tMEMBROS:");
+                printf("\tMEMBROS(%d):", qtd_func);
 
                 for (int i=0; i<qtd_func; i++){
 
-                    i_func = ALEAT(0, num_func - 1);
+                    i_func = ALEAT(0, num_func-1);
 
                     if (funcionarios[lider_num].lideranca > (funcionarios[i_func].lideranca + ALEAT(-20,10))){
                         printf(" %.2d:", i_func);
 
                         if (!(descr_func = malloc(51*sizeof(char))))
                             printf("erro malloc descricao func");
-                        sprintf(descr_func, "REUNIR L %.2d %.2d/%.2d %.2d:%.2d %.2d:%.2d T %.2d", lider_num, dia, mes, hc_compr.ini_h, hc_compr.ini_m, hc_compr.fim_h, hc_compr.fim_m, reun);
+
+                        sprintf(descr_func, "%s", descr_lider);
 
                         compr_func = cria_compromisso(hc_compr, id, descr_func);
 
@@ -215,7 +214,8 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
                         }
                         else {
                             printf(" IN");
-                            desmarca_compromisso_agenda(&funcionarios[i_func].agenda, dia, compr_func);
+                            if (!desmarca_compromisso_agenda(&funcionarios[i_func].agenda, dia, compr_func))
+                                printf("not found - i func\n");
                         }
                     }
                 }
@@ -223,16 +223,75 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
                 * desmarca esta reunião*/
                 if (!cont){
                     printf(" VAZIA");
-                    desmarca_compromisso_agenda(&funcionarios[lider_num].agenda, dia, compr_lider);
+                    if (!desmarca_compromisso_agenda(&funcionarios[lider_num].agenda, dia, compr_lider))
+                        printf("not found - lider func vazia\n");
                 }
             }
             /*flag == -1*/
             /*caso o lider nao possa marcar essa reunião*/
             else {
                 printf("\tLIDER INDISPONIVEL");
-                desmarca_compromisso_agenda(&funcionarios[lider_num].agenda, dia, compr_lider);
+                if (!desmarca_compromisso_agenda(&funcionarios[lider_num].agenda, dia, compr_lider))
+                    printf("not found - lider func indisponivel");
             }
             printf("\n");
+        }
+    }
+    imprime_agenda_de_geral(funcionarios);
+}
+
+/*procura em cada funcionario qual tem o compromisso mais recente*/
+int encontra_menor_compr(func_t funcionarios[], int day){
+    compromisso_t *m_loc=NULL, *m_glo=NULL;
+    int func;
+
+    for(int i=0; i<num_func; i++){
+        printf("i: %d ",i);
+        printf("mes: %d ",funcionarios[i].agenda.mes_atual);
+        printf("p_mes: %d ",funcionarios[i].agenda.ptr_mes_atual -> mes);
+        printf("dia: %d ",funcionarios[i].agenda.ptr_mes_atual -> dias -> dia);
+        printf("ini: %d \n",funcionarios[i].agenda.ptr_mes_atual -> dias -> comprs -> inicio);
+        if (funcionarios[i].agenda.ptr_mes_atual -> dias -> dia == day){
+            m_loc = funcionarios[i].agenda.ptr_mes_atual -> dias -> comprs;
+            if ((!m_glo) || ((m_loc -> inicio) < (m_glo -> inicio))){
+                m_glo = m_loc;
+                func = i;
+            }
+        }
+    }
+
+    if (!m_glo)
+        return -1;
+
+    return func;
+}
+
+void trabalha(func_t funcionarios[], taref_t tarefas[]){
+    compromisso_t *aux_compr;
+    int id, func, min_trab;
+
+    /*coloca todas as agendas no mes 1*/
+    for(int i=0; i<num_func; i++)
+        prim_mes_agenda(&funcionarios[i].agenda);
+    
+    /*roda todas os meses em todas as agendas*/
+    for(int mes=JAN; mes<=DEZ; mes++){
+        /*roda todas os dias em todas os meses*/
+        for(int dia=1; dia<=31; dia++){
+            func = encontra_menor_compr(funcionarios, dia);
+            aux_compr = funcionarios[func].agenda.ptr_mes_atual -> dias -> comprs;
+            while (func != -1){
+                printf("%.2d/%.2d F %.2d: %s \n",  dia, mes, func, descricao_compr(aux_compr));
+                id = id_compr(aux_compr);
+                if (tarefas[id].tempo_conclusao > 0){
+                    min_trab = aux_compr -> fim - aux_compr -> inicio;
+                    tarefas[id].tempo_conclusao -= min_trab * (funcionarios[func].experiencia / 100.0) * ((100 - tarefas[id].dificuldade) / 100.0);
+                    printf("\tT %.2d D %.2d TCR %.2d\n", id, tarefas[id].dificuldade, tarefas[id].tempo_conclusao);
+                }
+                else
+                    printf("CONCLUIDA");
+            }
+            desmarca_compromisso_agenda(&funcionarios[func].agenda, dia, aux_compr);
         }
     }
 }
