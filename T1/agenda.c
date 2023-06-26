@@ -28,8 +28,6 @@ int ALEAT(int min, int max);
 /*função de inicialização aleatória de cada funcionario e tarefa*/
 void set_func_e_taref(func_t funcionarios[], taref_t tarefas[]);
 
-void destroi_todas(func_t funcionarios[]);
-
 void imprime_status(func_t funcionarios[]);
 
 /*função para inicializar o mes de janeiro na agenda de cada funcionario*/
@@ -59,11 +57,14 @@ int main(){
     for (int i=0;i<num_taref; i++){
         if (tarefas[i].tempo_conclusao <= 0)
             tarefas_conc++;
+        else 
+            printf("tarefa %d nao cocluida: %d\n", i, tarefas[i].tempo_conclusao);
     }
-    printf("TAREFAS CONCLUIDAS %d", tarefas_conc);
-    imprime_agenda_de_geral(funcionarios);
-    destroi_todas(funcionarios);
-
+    printf("TAREFAS CONCLUIDAS %d\n", tarefas_conc);
+    /*destruição de todas as agendas*/
+    for (int i=0; i < num_func; i++){
+        destroi_agenda(&funcionarios[i].agenda);
+    }
     return 0;
 }
 
@@ -135,7 +136,7 @@ void imprime_agenda_de_geral(func_t funcionarios[]){
 }
 
 void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
-    int lider_num, dia, id, flag, qtd_func, i_func, cont, cont_reun=0;
+    int lider_num, dia, id, flag, qtd_func, i_func, cont, cont_reun=0, cont_indisp=0;
     horario_compromisso_t hc_compr;
     compromisso_t *compr_lider, *compr_func;
     char *descr_lider, *descr_func;
@@ -241,6 +242,7 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
             /*caso o lider nao possa marcar essa reunião*/
             else {
                 printf("\tLIDER INDISPONIVEL");
+                cont_indisp++;
                 if (!desmarca_compromisso_agenda(&funcionarios[lider_num].agenda, dia, compr_lider))
                     printf("not found - lider func indisponivel");
             }
@@ -248,6 +250,7 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
         }
     }
     imprime_agenda_de_geral(funcionarios);
+    printf("indisponiveis: %d\n", cont_indisp);
 }
 
 void testa_primeiro_dia(func_t funcionarios[]){
@@ -309,7 +312,7 @@ int trabalha(func_t funcionarios[], taref_t tarefas[]){
             }
         }
         /*acerta todas as agendas para o proximo mes*/
-        for (int i=1;i<num_func;i++){
+        for (int i=0;i<num_func;i++){
             prox_mes_agenda(&funcionarios[i].agenda);
         }
     }
