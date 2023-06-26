@@ -37,28 +37,34 @@ int inicia_agendas(agenda_t *agenda);
 
 void marca_reunioes(func_t funcionarios[], taref_t tarefas[]);
 
-void trabalha(func_t funcionarios[], taref_t tarefas[]);
+int trabalha(func_t funcionarios[], taref_t tarefas[]);
 
+void testa_primeiro_dia(func_t funcionarios[]);
+
+void imprime_agenda_de_geral(func_t funcionarios[]);
 
 int main(){
     func_t funcionarios[num_func];
     taref_t tarefas[num_taref];
+    int reunioes_realizadas, tarefas_conc=0;
 
     /*Inicialização*/
-    srand((unsigned)time(0));
     set_func_e_taref(funcionarios, tarefas);
-    //imprime_status(funcionarios);
+    imprime_status(funcionarios);
     marca_reunioes(funcionarios, tarefas);
 
-    trabalha(funcionarios, tarefas);
+    //testa_primeiro_dia(funcionarios);
+    reunioes_realizadas = trabalha(funcionarios, tarefas);
+    printf("NUMERO DE REUNIOES: %d\n", reunioes_realizadas);
+    for (int i=0;i<num_taref; i++){
+        if (tarefas[i].tempo_conclusao <= 0)
+            tarefas_conc++;
+    }
+    printf("TAREFAS CONCLUIDAS %d", tarefas_conc);
+    imprime_agenda_de_geral(funcionarios);
     destroi_todas(funcionarios);
 
     return 0;
-}
-
-void incrementa_exp(func_t funcionarios[], int i){
-    if (funcionarios[i].experiencia < 100)
-        funcionarios[i].experiencia++;
 }
 
 void destroi_todas(func_t funcionarios[]){
@@ -77,6 +83,7 @@ int ALEAT(int min, int max){
 /*função de inicialização aleatória de cada funcionario e tarefa*/
 void set_func_e_taref(func_t funcionarios[], taref_t tarefas[]){
     
+    srand((unsigned)time(0));
     for (int i=0; i<num_func; i++){
         funcionarios[i].lideranca = ALEAT(0,100);
         funcionarios[i].experiencia = ALEAT(20,100);
@@ -128,11 +135,12 @@ void imprime_agenda_de_geral(func_t funcionarios[]){
 }
 
 void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
-    int lider_num, dia, id, flag, qtd_func, i_func, cont;
+    int lider_num, dia, id, flag, qtd_func, i_func, cont, cont_reun=0;
     horario_compromisso_t hc_compr;
     compromisso_t *compr_lider, *compr_func;
     char *descr_lider, *descr_func;
 
+    srand((unsigned)time(0));
     for (int mes=JAN; mes<=DEZ; mes++){
 
         printf("M %.2d\n", mes);
@@ -226,6 +234,8 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
                     if (!desmarca_compromisso_agenda(&funcionarios[lider_num].agenda, dia, compr_lider))
                         printf("not found - lider func vazia\n");
                 }
+                else 
+                    cont_reun++;
             }
             /*flag == -1*/
             /*caso o lider nao possa marcar essa reunião*/
@@ -240,35 +250,34 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
     imprime_agenda_de_geral(funcionarios);
 }
 
+void testa_primeiro_dia(func_t funcionarios[]){
+
+    for (int i=0; i<num_func; i++){
+        printf("%d\n", funcionarios[i].agenda.ptr_mes_atual -> dias -> dia);
+    }
+}
+
 /*procura em cada funcionario qual tem o compromisso mais recente*/
 int encontra_menor_compr(func_t funcionarios[], int day){
     compromisso_t *m_loc=NULL, *m_glo=NULL;
-    int func;
+    int func=-1;
 
     for(int i=0; i<num_func; i++){
-        printf("i: %d ",i);
-        printf("mes: %d ",funcionarios[i].agenda.mes_atual);
-        printf("p_mes: %d ",funcionarios[i].agenda.ptr_mes_atual -> mes);
-        printf("dia: %d ",funcionarios[i].agenda.ptr_mes_atual -> dias -> dia);
-        printf("ini: %d \n",funcionarios[i].agenda.ptr_mes_atual -> dias -> comprs -> inicio);
-        if (funcionarios[i].agenda.ptr_mes_atual -> dias -> dia == day){
-            m_loc = funcionarios[i].agenda.ptr_mes_atual -> dias -> comprs;
-            if ((!m_glo) || ((m_loc -> inicio) < (m_glo -> inicio))){
-                m_glo = m_loc;
-                func = i;
+        if (funcionarios[i].agenda.ptr_mes_atual -> dias)
+           if (funcionarios[i].agenda.ptr_mes_atual -> dias -> dia == day){
+                m_loc = funcionarios[i].agenda.ptr_mes_atual -> dias -> comprs;
+                if ((!m_glo) || ((m_loc -> inicio) < (m_glo -> inicio))){
+                    m_glo = m_loc;
+                    func = i;
+                }
             }
-        }
     }
-
-    if (!m_glo)
-        return -1;
-
     return func;
 }
 
-void trabalha(func_t funcionarios[], taref_t tarefas[]){
+int trabalha(func_t funcionarios[], taref_t tarefas[]){
     compromisso_t *aux_compr;
-    int id, func, min_trab;
+    int id, func, min_trab, cont=0;
 
     /*coloca todas as agendas no mes 1*/
     for(int i=0; i<num_func; i++)
@@ -279,19 +288,30 @@ void trabalha(func_t funcionarios[], taref_t tarefas[]){
         /*roda todas os dias em todas os meses*/
         for(int dia=1; dia<=31; dia++){
             func = encontra_menor_compr(funcionarios, dia);
-            aux_compr = funcionarios[func].agenda.ptr_mes_atual -> dias -> comprs;
             while (func != -1){
+                aux_compr = funcionarios[func].agenda.ptr_mes_atual -> dias -> comprs;
                 printf("%.2d/%.2d F %.2d: %s \n",  dia, mes, func, descricao_compr(aux_compr));
                 id = id_compr(aux_compr);
+                printf("\tT %.2d D %.2d", id, tarefas[id].dificuldade);
+                min_trab = aux_compr -> fim - aux_compr -> inicio;
+                tarefas[id].tempo_conclusao -= min_trab * (funcionarios[func].experiencia / 100.0) * ((100 - tarefas[id].dificuldade) / 100.0);
                 if (tarefas[id].tempo_conclusao > 0){
-                    min_trab = aux_compr -> fim - aux_compr -> inicio;
-                    tarefas[id].tempo_conclusao -= min_trab * (funcionarios[func].experiencia / 100.0) * ((100 - tarefas[id].dificuldade) / 100.0);
-                    printf("\tT %.2d D %.2d TCR %.2d\n", id, tarefas[id].dificuldade, tarefas[id].tempo_conclusao);
-                }
+                    printf(" TCR %.2d\n", tarefas[id].tempo_conclusao);
+                    cont++;
+                    }
                 else
-                    printf("CONCLUIDA");
+                    printf(" CONCLUIDA\n");
+                
+                if (funcionarios[func].experiencia < 100)
+                    funcionarios[func].experiencia++;
+                desmarca_compromisso_agenda(&funcionarios[func].agenda, dia, aux_compr);
+                func = encontra_menor_compr(funcionarios, dia);
             }
-            desmarca_compromisso_agenda(&funcionarios[func].agenda, dia, aux_compr);
+        }
+        /*acerta todas as agendas para o proximo mes*/
+        for (int i=1;i<num_func;i++){
+            prox_mes_agenda(&funcionarios[i].agenda);
         }
     }
+    return cont;
 }

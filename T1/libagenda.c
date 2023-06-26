@@ -94,20 +94,20 @@ int marca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
     aux_dia = agenda -> ptr_mes_atual -> dias;
    
    /*caso onde se coloca na primeira posição*/
-    if ((!aux_dia) || (aux_dia -> dia > dia)){
+    if ((!aux_dia) || (aux_dia -> dia > novo_dia -> dia)){
         novo_dia -> prox = aux_dia;
         agenda -> ptr_mes_atual -> dias = novo_dia;
     }
 
     else {
-        if (aux_dia -> dia != dia){
+        if (aux_dia -> dia != novo_dia -> dia){
             /*corredor de dias*/
-            while ((aux_dia -> prox) && (aux_dia -> prox -> dia <= dia))
+            while ((aux_dia -> prox) && (aux_dia -> prox -> dia <= novo_dia -> dia))
                 aux_dia = aux_dia -> prox;
         }
 
         /*novo compromisso em um dia ja alocado*/
-        if (aux_dia -> dia == dia){    
+        if (aux_dia -> dia == novo_dia -> dia){    
             free(novo_dia);
             aux_compr = aux_dia -> comprs;
 
@@ -250,6 +250,8 @@ void imprime_agenda_mes(agenda_t* agenda){
         while (compr){
             printf("\t ID: %.2d ", id_compr(compr));
             printf("\t descricao: %s ", descricao_compr(compr));
+            printf("\t dia: %2.d ", dia -> dia);
+            printf("\t mes: %.2d ", agenda -> mes_atual);
             printf("\t inicio: %4d ", compr -> inicio);
             printf("\t fim: %4d ", compr -> fim);
             printf("\n");
