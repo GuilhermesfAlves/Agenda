@@ -29,51 +29,46 @@ int ALEAT(int min, int max);
 void set_func_e_taref(func_t funcionarios[], taref_t tarefas[]);
 
 void imprime_status(func_t funcionarios[]);
-
 /*função para inicializar o mes de janeiro na agenda de cada funcionario*/
 int inicia_agendas(agenda_t *agenda);
 
+/**/
 void marca_reunioes(func_t funcionarios[], taref_t tarefas[]);
 
 int trabalha(func_t funcionarios[], taref_t tarefas[]);
 
-void testa_primeiro_dia(func_t funcionarios[]);
-
-void imprime_agenda_de_geral(func_t funcionarios[]);
 
 int main(){
     func_t funcionarios[num_func];
     taref_t tarefas[num_taref];
-    int reunioes_realizadas, tarefas_conc=0;
+    int reunioes_realizadas, tarefas_conc=0,i=0;
 
     /*Inicialização*/
+    /*srand((unsigned)time(0));*/
     set_func_e_taref(funcionarios, tarefas);
     imprime_status(funcionarios);
     marca_reunioes(funcionarios, tarefas);
 
-    //testa_primeiro_dia(funcionarios);
     reunioes_realizadas = trabalha(funcionarios, tarefas);
     printf("NUMERO DE REUNIOES: %d\n", reunioes_realizadas);
-    for (int i=0;i<num_taref; i++){
+    while (i<num_taref){
         if (tarefas[i].tempo_conclusao <= 0)
             tarefas_conc++;
         else 
             printf("tarefa %d nao cocluida: %d\n", i, tarefas[i].tempo_conclusao);
+        i++;
     }
     printf("TAREFAS CONCLUIDAS %d\n", tarefas_conc);
+
+    i = 0;
     /*destruição de todas as agendas*/
-    for (int i=0; i < num_func; i++){
+    while (i < num_func){
         destroi_agenda(&funcionarios[i].agenda);
+        i++;
     }
     return 0;
 }
 
-void destroi_todas(func_t funcionarios[]){
-
-    for (int i=0; i < num_func; i++){
-        destroi_agenda(&funcionarios[i].agenda);
-    }
-}
 
 /*função que aleatoriza numeros entre um minimo e máximo*/
 int ALEAT(int min, int max){
@@ -81,29 +76,33 @@ int ALEAT(int min, int max){
     return (rand() % (max + 1 - min)) + min;
 }
 
+void imprime_status(func_t funcionarios[]){
+    int i=0;
+    while (i < num_func){
+        printf("funcionario %.2d lider: %.3d, exp: %.3d\n", i, funcionarios[i].lideranca, funcionarios[i].experiencia);
+        i++;
+    }
+}
+
 /*função de inicialização aleatória de cada funcionario e tarefa*/
 void set_func_e_taref(func_t funcionarios[], taref_t tarefas[]){
-    
-    srand((unsigned)time(0));
-    for (int i=0; i<num_func; i++){
+    int i=0;
+
+    while (i<num_func){
         funcionarios[i].lideranca = ALEAT(0,100);
         funcionarios[i].experiencia = ALEAT(20,100);
         if (!inicia_agendas(&funcionarios[i].agenda)){
             printf("erro alocacao janeiro em %d", i);
             return;
         }
+        i++;
     }
-    for (int i=0; i<num_taref; i++){
+    i = 0;
+    while (i<num_taref){
         tarefas[i].tempo_conclusao = ALEAT(600,800);
         tarefas[i].dificuldade = ALEAT(30,80);
+        i++;
     }
-}
-
-void imprime_status(func_t funcionarios[]){
-
-    for (int i=0; i<num_func; i++)
-        printf("funcionario %.2d lider: %.3d, exp: %.3d\n", i, funcionarios[i].lideranca, funcionarios[i].experiencia);
-    
 }
 
 int inicia_agendas(agenda_t *agenda){
@@ -124,32 +123,23 @@ int inicia_agendas(agenda_t *agenda){
     return 1;
 }
 
-void imprime_agenda_de_geral(func_t funcionarios[]){
-
-    for (int i=0; i<num_func; i++){
-        printf("funcionario %.2d\n", i);
-        prim_mes_agenda(&funcionarios[i].agenda);
-        do {
-            imprime_agenda_mes(&funcionarios[i].agenda);
-        } while (prox_mes_agenda(&funcionarios[i].agenda) != JAN);
-    }
-}
-
+/*nesta função tentam ser marcadas 100 reuniões por mes*/
 void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
-    int lider_num, dia, id, flag, qtd_func, i_func, cont, cont_reun=0, cont_indisp=0;
+    int i,i_lider, mes = JAN, dia, id, flag, qtd_func, i_func, cont_func, cont_reun=0, cont_indisp=0, reun;
     horario_compromisso_t hc_compr;
     compromisso_t *compr_lider, *compr_func;
     char *descr_lider, *descr_func;
 
-    srand((unsigned)time(0));
-    for (int mes=JAN; mes<=DEZ; mes++){
+    /*srand((unsigned)time(0));*/
+    while (mes<=DEZ){
 
         printf("M %.2d\n", mes);
-        for (int reun=0; reun<num_taref; reun++){
+        reun=0;
+        while (reun<num_taref){
 
             do {
-                lider_num = ALEAT(0, num_func - 1);
-            } while((funcionarios[lider_num].lideranca < 30) || (funcionarios[lider_num].lideranca > 70));
+                i_lider = ALEAT(0, num_func - 1);
+            } while((funcionarios[i_lider].lideranca < 30) || (funcionarios[i_lider].lideranca > 70));
 
             if (!(descr_lider = malloc(51*sizeof(char))))
                 return;
@@ -160,7 +150,7 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
             hc_compr.fim_m = hc_compr.ini_m;
             dia = ALEAT(1, 31);
             id = ALEAT(0, num_taref - 1);
-            sprintf(descr_lider, "REUNIR L %.2d %.2d/%.2d %.2d:%.2d %.2d:%.2d T %.2d", lider_num, dia, mes, hc_compr.ini_h, hc_compr.ini_m, hc_compr.fim_h, hc_compr.fim_m, id);
+            sprintf(descr_lider, "REUNIR L %.2d %.2d/%.2d %.2d:%.2d %.2d:%.2d T %.2d", i_lider, dia, mes, hc_compr.ini_h, hc_compr.ini_m, hc_compr.fim_h, hc_compr.fim_m, id);
 
             printf("%s", descr_lider);
 
@@ -169,28 +159,30 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
                 return;
             }
 
-            while (mes != funcionarios[lider_num].agenda.mes_atual){
-                if (!prox_mes_agenda(&funcionarios[lider_num].agenda)){
+            while (mes != funcionarios[i_lider].agenda.mes_atual){
+                if (!prox_mes_agenda(&funcionarios[i_lider].agenda)){
                     printf("erro malloc proximo mes lider\n");
                     break;
                 }   
             }
-            flag = marca_compromisso_agenda(&funcionarios[lider_num].agenda, dia, compr_lider);
+
+            flag = marca_compromisso_agenda(&funcionarios[i_lider].agenda, dia, compr_lider);
             if (flag == 0){
                 printf("erro malloc novo compromisso em agenda\n");
                 return;
             }
+
             else if (flag == 1){
 
                 qtd_func = ALEAT(2,6);
-                cont = 0;
-                printf("\tMEMBROS(%d):", qtd_func);
-
-                for (int i=0; i<qtd_func; i++){
+                cont_func = 0;
+                printf("\tMEMBROS ");
+                i = 0;    
+                while (i<qtd_func){
 
                     i_func = ALEAT(0, num_func-1);
 
-                    if (funcionarios[lider_num].lideranca > (funcionarios[i_func].lideranca + ALEAT(-20,10))){
+                    if (funcionarios[i_lider].lideranca > (funcionarios[i_func].lideranca + ALEAT(-20,10))){
                         printf(" %.2d:", i_func);
 
                         if (!(descr_func = malloc(51*sizeof(char))))
@@ -218,7 +210,7 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
                         }
                         /*cont para verificar se pelo menos 1 pessoa pode ir à reunião*/
                         if (flag == 1){
-                            cont++;
+                            cont_func++;
                             printf(" OK");
                         }
                         else {
@@ -227,12 +219,13 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
                                 printf("not found - i func\n");
                         }
                     }
+                    i++;
                 }
                 /*caso nenhum funcionario se apresente disponivel para a reunião, o lider
                 * desmarca esta reunião*/
-                if (!cont){
+                if (!cont_func){
                     printf(" VAZIA");
-                    if (!desmarca_compromisso_agenda(&funcionarios[lider_num].agenda, dia, compr_lider))
+                    if (!desmarca_compromisso_agenda(&funcionarios[i_lider].agenda, dia, compr_lider))
                         printf("not found - lider func vazia\n");
                 }
                 else 
@@ -243,29 +236,23 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
             else {
                 printf("\tLIDER INDISPONIVEL");
                 cont_indisp++;
-                if (!desmarca_compromisso_agenda(&funcionarios[lider_num].agenda, dia, compr_lider))
+                if (!desmarca_compromisso_agenda(&funcionarios[i_lider].agenda, dia, compr_lider))
                     printf("not found - lider func indisponivel");
             }
             printf("\n");
+            reun++;
         }
+        mes++;
     }
-    imprime_agenda_de_geral(funcionarios);
     printf("indisponiveis: %d\n", cont_indisp);
-}
-
-void testa_primeiro_dia(func_t funcionarios[]){
-
-    for (int i=0; i<num_func; i++){
-        printf("%d\n", funcionarios[i].agenda.ptr_mes_atual -> dias -> dia);
-    }
 }
 
 /*procura em cada funcionario qual tem o compromisso mais recente*/
 int encontra_menor_compr(func_t funcionarios[], int day){
     compromisso_t *m_loc=NULL, *m_glo=NULL;
-    int func=-1;
+    int func=-1, i=0;
 
-    for(int i=0; i<num_func; i++){
+    while (i<num_func){
         if (funcionarios[i].agenda.ptr_mes_atual -> dias)
            if (funcionarios[i].agenda.ptr_mes_atual -> dias -> dia == day){
                 m_loc = funcionarios[i].agenda.ptr_mes_atual -> dias -> comprs;
@@ -274,47 +261,65 @@ int encontra_menor_compr(func_t funcionarios[], int day){
                     func = i;
                 }
             }
+        i++;
     }
     return func;
 }
 
+/*em trabalha os compromissos marcados nas agendas dos funcionarios
+* são seguidos em ordem cronológica e então faz o decréscimo de tempo
+* necessário para realizar a tarefa*/
 int trabalha(func_t funcionarios[], taref_t tarefas[]){
     compromisso_t *aux_compr;
-    int id, func, min_trab, cont=0;
+    int id, func, min_trab, cont=0, i=0, mes=JAN, dia=1;
 
     /*coloca todas as agendas no mes 1*/
-    for(int i=0; i<num_func; i++)
+    while(i<num_func){
         prim_mes_agenda(&funcionarios[i].agenda);
-    
+        i++;
+    }
+
     /*roda todas os meses em todas as agendas*/
-    for(int mes=JAN; mes<=DEZ; mes++){
+    while (mes<=DEZ){
         /*roda todas os dias em todas os meses*/
-        for(int dia=1; dia<=31; dia++){
+        dia = 0;
+        while (dia<=31){
             func = encontra_menor_compr(funcionarios, dia);
+
+            /*dentro do while rodam todos os compromissos para o dia tal*/
             while (func != -1){
                 aux_compr = funcionarios[func].agenda.ptr_mes_atual -> dias -> comprs;
-                printf("%.2d/%.2d F %.2d: %s \n",  dia, mes, func, descricao_compr(aux_compr));
                 id = id_compr(aux_compr);
+
+                printf("%.2d/%.2d F %.2d: %s \n",  dia, mes, func, descricao_compr(aux_compr));
                 printf("\tT %.2d D %.2d", id, tarefas[id].dificuldade);
-                min_trab = aux_compr -> fim - aux_compr -> inicio;
-                tarefas[id].tempo_conclusao -= min_trab * (funcionarios[func].experiencia / 100.0) * ((100 - tarefas[id].dificuldade) / 100.0);
+                
                 if (tarefas[id].tempo_conclusao > 0){
-                    printf(" TCR %.2d\n", tarefas[id].tempo_conclusao);
+                    min_trab = aux_compr -> fim - aux_compr -> inicio;
+                    printf(" TCR %.3d\n", tarefas[id].tempo_conclusao);
+                    tarefas[id].tempo_conclusao -= min_trab * (funcionarios[func].experiencia / 100.0) * ((100 - tarefas[id].dificuldade) / 100.0);
+
                     cont++;
-                    }
+                }
                 else
                     printf(" CONCLUIDA\n");
-                
+
                 if (funcionarios[func].experiencia < 100)
                     funcionarios[func].experiencia++;
+
                 desmarca_compromisso_agenda(&funcionarios[func].agenda, dia, aux_compr);
                 func = encontra_menor_compr(funcionarios, dia);
             }
+            dia++;
         }
+
+        i = 0;
         /*acerta todas as agendas para o proximo mes*/
-        for (int i=0;i<num_func;i++){
+        while (i<num_func){
             prox_mes_agenda(&funcionarios[i].agenda);
+            i++;    
         }
+        mes++;
     }
     return cont;
 }

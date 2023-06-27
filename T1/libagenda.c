@@ -11,7 +11,6 @@
    Retorna um compromisso com as informacoes de data de hc, um identificador
    id e uma string de descricao. A funcao deve alocar um novo espaco de 
    armazenamento para receber a string descricao. */ 
-/*OK*/
 compromisso_t* cria_compromisso (horario_compromisso_t hc, int id,  char* descricao){
     compromisso_t *compr;
 
@@ -81,7 +80,6 @@ void destroi_agenda(agenda_t* agenda){
     A lista de compromisso eh ordenada pelo horario de inicio. Eh necessario
     testar a interseccao entre horarios de inicio e de fim no compromisso novo
     considerando o  compromisso anterior e o proximo, caso existam. */
-/*ARRUMAR*/
 int marca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
     dia_t *aux_dia, *novo_dia;
     compromisso_t *aux_compr;
@@ -235,7 +233,6 @@ int desmarca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr)
 }
 
 /* Imprime a agenda do mes atual (mes atual) */
-/*OK*/
 void imprime_agenda_mes(agenda_t* agenda){
     dia_t *dia;
     compromisso_t *compr;
@@ -266,7 +263,6 @@ void imprime_agenda_mes(agenda_t* agenda){
 }
 
 /* Retorna o mes atual da agenda. */
-/*OK*/
 int mes_atual_agenda(agenda_t *agenda){
 
     return agenda -> mes_atual;
@@ -274,7 +270,6 @@ int mes_atual_agenda(agenda_t *agenda){
 
 /* Ajusta o mes_atual para 1; caso o mes esteja alocado, ptr_mes_atual
  * apontara para o mes 1, caso contrario para NULL. */
-/*OK*/
 void prim_mes_agenda(agenda_t* agenda){
     mes_t *mes;
 
@@ -298,7 +293,6 @@ void prim_mes_agenda(agenda_t* agenda){
  * O ponteiro ptr_mes_atual deve ser atualizado para apontar para o novo mes_atual.
  * Se o novo mes_atual nao existir deve ser alocado. A funcao retorna o inteiro 
  * mes_atual em caso de sucesso ou 0 caso contrario.  */ 
-/*OK*/
 int prox_mes_agenda(agenda_t* agenda){
     mes_t *mes;
 
@@ -354,7 +348,6 @@ int ant_mes_agenda(agenda_t* agenda){
 /* Retorna um ponteiro para a lista ligada de compromissos de um dia do mes
    ou NULL se vazia. A lista de compromissos retornada pode ser percorrida
    usando-se a funcao prox_compr. */ 
-/*OK*/
 compromisso_t* compr_agenda(agenda_t* agenda, int dia){
     dia_t *dia_aux;
 
@@ -370,7 +363,6 @@ compromisso_t* compr_agenda(agenda_t* agenda, int dia){
 
 /* Retorna o primeiro compromisso da lista de compromissos compr e avanca
  * para o prox. Retorna NULL se a lista esta vazia, ou seja, sem compromissos.*/
-/*OK*/
 compromisso_t* prox_compr(compromisso_t* compr){
     compromisso_t *atual;
 
@@ -381,8 +373,7 @@ compromisso_t* prox_compr(compromisso_t* compr){
     return atual;
 }
 
-/* funcoes getters */
-/*OK*/
+/* traduz os minutos desde 00:00 para horas de inicio e fim*/
 horario_compromisso_t hc_compr(compromisso_t* compr){
     horario_compromisso_t horas;
 
@@ -394,13 +385,11 @@ horario_compromisso_t hc_compr(compromisso_t* compr){
     return horas;
 } 
 
-/*OK*/
 int id_compr(compromisso_t* compr){
 
     return compr -> id;
 }
 
-/*OK*/
 char* descricao_compr(compromisso_t* compr){
 
     return compr -> descricao;
