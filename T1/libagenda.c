@@ -7,6 +7,32 @@
 #define num_func 30
 #define num_taref 100
 
+/* Cria uma agenda vazia:
+*  O mes_atual deve ser inicializado com 1; ptr_mes_atual deve ser definido. */
+agenda_t* cria_agenda(){
+    agenda_t *agenda;
+    mes_t *mes;
+
+        if (!(agenda = malloc(sizeof(agenda_t)))){
+            printf("erro alocação agenda");
+            return NULL;
+        }
+
+        if (!(mes = malloc(sizeof(mes_t)))){
+        printf("erro alocação primeiro mes\n");
+        return NULL;
+    }
+
+    agenda -> ptr_mes_atual = mes;
+    agenda -> ptr_mes_atual -> ant = agenda -> ptr_mes_atual;
+    agenda -> ptr_mes_atual -> prox = agenda -> ptr_mes_atual;
+    agenda -> ptr_mes_atual -> dias = NULL;
+    agenda -> ptr_mes_atual -> mes = JAN;
+    agenda -> mes_atual = JAN;
+
+    return agenda;
+}
+
 /* Cria um compromisso:
    Retorna um compromisso com as informacoes de data de hc, um identificador
    id e uma string de descricao. A funcao deve alocar um novo espaco de 
@@ -26,6 +52,23 @@ compromisso_t* cria_compromisso (horario_compromisso_t hc, int id,  char* descri
     return compr;
 }
 
+/* destroi a descricao de um compromisso */
+void destroi_descricao_compromisso(compromisso_t* compr){
+    
+    if (compr -> descricao) 
+        free(compr -> descricao);
+}
+
+/* destroi um compromisso */
+void destroi_compromisso(compromisso_t* compr){
+
+    if (compr){
+        destroi_descricao_compromisso(compr);
+        free(compr);
+    }
+}
+
+
 /* Libera toda memoria associado a agenda. */
 /*OK*/
 void destroi_agenda(agenda_t* agenda){
@@ -43,10 +86,7 @@ void destroi_agenda(agenda_t* agenda){
             aux_compr = aux_dia -> comprs;
         
             while (aux_compr){
-                aux_dia -> comprs = aux_compr -> prox;
-                free(aux_compr -> descricao);
-                free(aux_compr);
-                aux_compr = aux_dia -> comprs;
+                destroi_compromisso(prox_compr(aux_compr));
             }
         
             aux_mes -> dias = aux_dia -> prox;
@@ -67,8 +107,9 @@ void destroi_agenda(agenda_t* agenda){
     }
 
     free(aux_mes);
-    agenda -> ptr_mes_atual = NULL;
-    agenda -> mes_atual = 0;
+    free(agenda);
+    agenda = NULL;
+
 }
 
 /* Marca um compromisso na agenda:
@@ -178,16 +219,14 @@ int desmarca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr)
             
             /*liberação de data*/
             aux2_compr = aux_compr -> prox -> prox;
-            free(aux_compr -> prox -> descricao);
-            free(aux_compr -> prox);
+            destroi_compromisso(aux_compr -> prox);
             aux_compr -> prox = aux2_compr;
         }
         /*primeiro compromisso do dia*/
         else {
             /*liberação de data*/
             aux_dia -> prox -> comprs = aux_compr -> prox;
-            free(aux_compr -> descricao);
-            free(aux_compr);
+            destroi_compromisso(aux_compr);
 
             /*libera o dia se todos os compromissos nele ja tiverem
             * sido liberados*/
@@ -213,15 +252,13 @@ int desmarca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr)
                 return 0;
             
             aux2_compr = aux_compr -> prox -> prox;
-            free(aux_compr -> prox -> descricao);
-            free(aux_compr -> prox);
+            destroi_compromisso(aux_compr -> prox);
             aux_compr -> prox = aux2_compr;
         }
         /*primeiro compromisso do dia*/
         else {
             aux_dia -> comprs = aux_compr -> prox;
-            free(aux_compr -> descricao);
-            free(aux_compr);
+            destroi_compromisso(aux_compr);
 
             if (!aux_dia -> comprs){
                 agenda -> ptr_mes_atual -> dias = aux_dia -> prox;

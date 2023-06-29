@@ -31,3 +31,10 @@ TIPOS DE DADOS:
     - int inicio (minutos desde 00:00)
     - int fim (minutos desde 00:00)
     - ponteiro compromisso_t proximo
+
+tamanho de blocos:
+    compromisso: 32
+    dia: 24
+    mes: 32
+    agenda 16
+    descricao 51
