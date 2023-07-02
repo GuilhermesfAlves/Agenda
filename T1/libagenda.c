@@ -13,12 +13,12 @@ agenda_t* cria_agenda(){
     agenda_t *agenda;
     mes_t *mes;
 
-        if (!(agenda = malloc(sizeof(agenda_t)))){
-            printf("erro alocação agenda");
-            return NULL;
-        }
+    if (!(agenda = malloc(sizeof(agenda_t)))){
+        printf("erro alocação agenda");
+        return NULL;
+    }
 
-        if (!(mes = malloc(sizeof(mes_t)))){
+    if (!(mes = malloc(sizeof(mes_t)))){
         printf("erro alocação primeiro mes\n");
         return NULL;
     }
@@ -54,23 +54,18 @@ compromisso_t* cria_compromisso (horario_compromisso_t hc, int id,  char* descri
 
 /* destroi a descricao de um compromisso */
 void destroi_descricao_compromisso(compromisso_t* compr){
-    
-    if (compr -> descricao) 
-        free(compr -> descricao);
+
+    free(compr -> descricao);
 }
 
 /* destroi um compromisso */
 void destroi_compromisso(compromisso_t* compr){
 
-    if (compr){
-        destroi_descricao_compromisso(compr);
-        free(compr);
-    }
+    free(compr);
 }
 
 
 /* Libera toda memoria associado a agenda. */
-/*OK*/
 void destroi_agenda(agenda_t* agenda){
     mes_t *aux_mes;
     dia_t *aux_dia;
@@ -165,6 +160,12 @@ int marca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
                 aux_compr -> prox = compr;
             }
 
+            aux_compr = aux_dia -> comprs;
+            while (aux_compr){
+                printf("(%d)",aux_compr -> id);
+                aux_compr = aux_compr -> prox;
+            }
+            
             /*confere intersecçao*/
             aux_compr = aux_dia -> comprs;
             while (aux_compr -> prox) {
@@ -188,7 +189,7 @@ int marca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
       1: em caso de sucesso
       0: caso nao tenha encontrado o compr */
 int desmarca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
-    compromisso_t *aux_compr, *aux2_compr;
+    compromisso_t *aux_compr;
     dia_t *aux_dia, *aux2_dia;
 
     aux_dia = agenda -> ptr_mes_atual -> dias;
@@ -217,16 +218,13 @@ int desmarca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr)
             if (!aux_compr -> prox)
                 return 0;
             
-            /*liberação de data*/
-            aux2_compr = aux_compr -> prox -> prox;
-            destroi_compromisso(aux_compr -> prox);
-            aux_compr -> prox = aux2_compr;
+            /*tira o compromisso*/
+            aux_compr -> prox = aux_compr -> prox -> prox;
         }
         /*primeiro compromisso do dia*/
         else {
-            /*liberação de data*/
+            /*tira o compromisso*/
             aux_dia -> prox -> comprs = aux_compr -> prox;
-            destroi_compromisso(aux_compr);
 
             /*libera o dia se todos os compromissos nele ja tiverem
             * sido liberados*/
@@ -251,14 +249,11 @@ int desmarca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr)
             if (!aux_compr -> prox)
                 return 0;
             
-            aux2_compr = aux_compr -> prox -> prox;
-            destroi_compromisso(aux_compr -> prox);
-            aux_compr -> prox = aux2_compr;
+            aux_compr -> prox = aux_compr -> prox -> prox;
         }
         /*primeiro compromisso do dia*/
         else {
             aux_dia -> comprs = aux_compr -> prox;
-            destroi_compromisso(aux_compr);
 
             if (!aux_dia -> comprs){
                 agenda -> ptr_mes_atual -> dias = aux_dia -> prox;
@@ -356,7 +351,6 @@ int prox_mes_agenda(agenda_t* agenda){
 }
 
 /* Analogo ao prox_mes_agenda porem decrementa mes_atual. */ 
-/*OK*/
 int ant_mes_agenda(agenda_t* agenda){
     mes_t *mes;
 
