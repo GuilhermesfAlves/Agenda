@@ -146,14 +146,15 @@ compromisso_t *define_compromisso(int dia, int mes, int i_func, compromisso_t *c
 
 /*nesta função tentam ser marcadas 100 reuniões por mes*/
 void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
-    int i_lider, mes = JAN, dia, flag, qtd_func, i_func, cont_func, cont_indisp=0, reun;
+    int i_lider, mes, dia, flag, qtd_func, i_func, cont_func, reun;
     compromisso_t *compr_lider, *compr_func;
 
-    while (mes<=DEZ){
+    mes = JAN;
+    while (mes <= DEZ){
 
         printf("M %.2d\n", mes);
         reun=0;
-        while (reun<num_taref){
+        while (reun < num_taref){
 
             do {
                 i_lider = ALEAT(0, num_func - 1);
@@ -170,9 +171,7 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
             /*caso o lider nao possa marcar essa reunião*/
             else if (flag == -1){
                 printf("\tLIDER INDISPONIVEL");
-                cont_indisp++;
-                if (!desmarca_compromisso_agenda(funcionarios[i_lider].agenda, dia, compr_lider))
-                    printf("not found - lider indisponivel");
+                desmarca_compromisso_agenda(funcionarios[i_lider].agenda, dia, compr_lider);
                 destroi_descricao_compromisso(compr_lider);
                 destroi_compromisso(compr_lider);
             }
@@ -184,11 +183,8 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
                 printf("\tMEMBROS ");
                 qtd_func = ALEAT(2,6);
                 cont_func = 0;
-                while (0<qtd_func){
-                    /*erro para arrumar a lideranca do funcionario escolhido*/
-                    do
-                        i_func = ALEAT(0, num_func-1);
-                    while (funcionarios[i_func].lideranca > 90);
+                while (0 < qtd_func){
+                    i_func = ALEAT(0, num_func - 1);
 
                     if (funcionarios[i_lider].lideranca > (funcionarios[i_func].lideranca + ALEAT(-20,10))){
                         printf(" %.2d:", i_func);
@@ -197,17 +193,14 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
                         flag = marca_compromisso_agenda(funcionarios[i_func].agenda, dia, compr_func);
                         switch (flag) {
                         case -1:
-                            /*caso o retorno de marca_compromisso_agenda seja -1, ou seja uma intersecção
-                            * o compromisso não sera marcado com este funcionario*/
                             printf("IN");
-                            if (!desmarca_compromisso_agenda(funcionarios[i_func].agenda, dia, compr_func))
-                                printf("not found - i func\n");
+                            desmarca_compromisso_agenda(funcionarios[i_func].agenda, dia, compr_func);
                             destroi_descricao_compromisso(compr_func);
                             destroi_compromisso(compr_func);
                             break;
                         
                         case 1:
-                            /*cont para verificar se pelo menos 1 pessoa pode ir à reunião*/
+                            /*cont_func para verificar se pelo menos 1 pessoa pode ir à reunião*/
                             cont_func++;
                             printf("OK");
                             break;
@@ -241,7 +234,6 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
         }
         mes++;
     }
-    printf("indisponiveis: %d\n", cont_indisp);
 }
 
 /*procura em cada funcionario qual tem o compromisso mais recente*/
@@ -282,7 +274,7 @@ int trabalha(func_t funcionarios[], taref_t tarefas[]){
     mes = JAN;
     cont = 0;
     /*roda todas os meses em todas as agendas*/
-    while (mes<=DEZ){
+    while (mes <= DEZ){
         /*roda todas os dias em todas os meses*/
         dia = 1;
         while (dia <= 31){
@@ -314,6 +306,7 @@ int trabalha(func_t funcionarios[], taref_t tarefas[]){
                     funcionarios[func].experiencia++;
 
                 desmarca_compromisso_agenda(funcionarios[func].agenda, dia, compr);
+                destroi_descricao_compromisso(compr);
                 destroi_compromisso(compr);
                 func = encontra_menor_compr(funcionarios, dia);
             }
