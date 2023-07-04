@@ -4,8 +4,6 @@
 #include <time.h>
 #define JAN 1
 #define DEZ 12
-#define num_func 30
-#define num_taref 100
 
 /* Cria uma agenda vazia:
 *  O mes_atual deve ser inicializado com 1; ptr_mes_atual deve ser definido. */
@@ -221,6 +219,7 @@ int desmarca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr)
             while ((aux_compr -> prox) && (aux_compr -> prox != compr))
                 aux_compr = aux_compr -> prox;
            
+            /*nao achou o compromisso*/
             if (!aux_compr -> prox)
                 return 0;
             
@@ -406,6 +405,9 @@ compromisso_t* compr_agenda(agenda_t* agenda, int dia){
  * para o prox. Retorna NULL se a lista esta vazia, ou seja, sem compromissos.*/
 compromisso_t* prox_compr(compromisso_t* compr){
     compromisso_t *atual;
+
+    if (!compr)
+        return NULL;
 
     atual = compr -> prox;
     if (atual)
