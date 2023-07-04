@@ -51,3 +51,9 @@ perdido definitivamente
     blocos de 24 -> dia
 perdido indiretamente
     blocos em dia
+
+
+
+PARA PERGUNTAR:
+    -prox_compr está certa?
+    

@@ -289,18 +289,18 @@ int trabalha(func_t funcionarios[], taref_t tarefas[]){
                 printf("\tT %.2d D %.2d", id, tarefas[id].dificuldade);
                 
                 if (tarefas[id].tempo_conclusao > 0){
-                    printf(" TCR %.3d\n", tarefas[id].tempo_conclusao);
                     min_trab = compr -> fim - compr -> inicio;
                     tarefas[id].tempo_conclusao -= min_trab * (funcionarios[func].experiencia / 100.0) * ((100 - tarefas[id].dificuldade) / 100.0);
+                    if (tarefas[id].tempo_conclusao <= 0)
+                        tarefas[id].tempo_conclusao = 0;
 
+                    printf(" TCR %.3d\n", tarefas[id].tempo_conclusao);
                     /*cont é o contador de quantas reunioes que foram marcadas foram realizadas, ou seja,
                     * tinham tarefas para se fazer nelas*/
                     cont++;
                 }
-                else {
-                    tarefas[id].tempo_conclusao = 0;
+                else 
                     printf(" CONCLUIDA\n");
-                }
 
                 if (funcionarios[func].experiencia < 100)
                     funcionarios[func].experiencia++;

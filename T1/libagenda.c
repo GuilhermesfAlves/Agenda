@@ -62,8 +62,11 @@ void destroi_descricao_compromisso(compromisso_t* compr){
 
 /* destroi um compromisso */
 void destroi_compromisso(compromisso_t* compr){
+    compromisso_t *aux_compr;
 
+    aux_compr = compr -> prox;
     free(compr);
+    compr = aux_compr;
 }
 
 
@@ -83,7 +86,10 @@ void destroi_agenda(agenda_t* agenda){
             aux_compr = aux_dia -> comprs;
         
             while (aux_compr){
-                destroi_compromisso(prox_compr(aux_compr));
+                desmarca_compromisso_agenda(agenda, aux_dia -> dia, aux_compr);
+                destroi_descricao_compromisso(aux_compr);
+                destroi_compromisso(aux_compr);
+                aux_compr = prox_compr(aux_compr);
             }
         
             aux_mes -> dias = aux_dia -> prox;
@@ -401,7 +407,7 @@ compromisso_t* compr_agenda(agenda_t* agenda, int dia){
 compromisso_t* prox_compr(compromisso_t* compr){
     compromisso_t *atual;
 
-    atual = compr;
+    atual = compr -> prox;
     if (atual)
         compr = compr -> prox;
 
