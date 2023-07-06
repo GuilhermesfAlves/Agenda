@@ -28,7 +28,13 @@ int ALEAT(int min, int max);
 /*função de inicialização aleatória de cada funcionario e tarefa*/
 void set_func_e_taref(func_t funcionarios[], taref_t tarefas[]);
 
+<<<<<<< HEAD
 /*funcao principal que marca as reunioes dos funcionarios da firma*/
+=======
+void imprime_status(func_t funcionarios[], taref_t tarefas[]);
+
+/**/
+>>>>>>> d707f8ecd72b0da2a422d84bff35f337f97a8f16
 void marca_reunioes(func_t funcionarios[], taref_t tarefas[]);
 
 /*funcao que anda pelos compromissos da firma*/
@@ -42,8 +48,12 @@ int main(){
     int reunioes_realizadas, tarefas_conc=0,i=0;
 
     /*Inicialização*/
-    srand((unsigned)time(0));
+    /*srand((unsigned)time(0));*/
     set_func_e_taref(funcionarios, tarefas);
+<<<<<<< HEAD
+=======
+    imprime_status(funcionarios, tarefas);
+>>>>>>> d707f8ecd72b0da2a422d84bff35f337f97a8f16
     marca_reunioes(funcionarios, tarefas);
 
     reunioes_realizadas = trabalha(funcionarios, tarefas);
@@ -74,6 +84,25 @@ int ALEAT(int min, int max){
     return (rand() % (max + 1 - min)) + min;
 }
 
+<<<<<<< HEAD
+=======
+void imprime_status(func_t funcionarios[], taref_t tarefas[]){
+    int i; 
+    i = 0;
+    while (i < num_func){
+        printf("funcionario %.2d lider: %.3d, exp: %.3d\n", i, funcionarios[i].lideranca, funcionarios[i].experiencia);
+        i++;
+    }
+    printf("\n");
+    i = 0;
+    while (i < num_taref){
+        printf("tarefa %d dificuldade %.2d tempo de conclusao: %.2d\n", i, tarefas[i].dificuldade, tarefas[i].tempo_conclusao);
+        i++;
+    }
+    printf("\n");
+}
+
+>>>>>>> d707f8ecd72b0da2a422d84bff35f337f97a8f16
 /*função de inicialização aleatória de cada funcionario e tarefa*/
 void set_func_e_taref(func_t funcionarios[], taref_t tarefas[]){
     int i=0;
