@@ -28,11 +28,16 @@ int ALEAT(int min, int max);
 /*função de inicialização aleatória de cada funcionario e tarefa*/
 void set_func_e_taref(func_t funcionarios[], taref_t tarefas[]);
 
+<<<<<<< HEAD
+/*funcao principal que marca as reunioes dos funcionarios da firma*/
+=======
 void imprime_status(func_t funcionarios[], taref_t tarefas[]);
 
 /**/
+>>>>>>> d707f8ecd72b0da2a422d84bff35f337f97a8f16
 void marca_reunioes(func_t funcionarios[], taref_t tarefas[]);
 
+/*funcao que anda pelos compromissos da firma*/
 int trabalha(func_t funcionarios[], taref_t tarefas[]);
 
 
@@ -45,7 +50,10 @@ int main(){
     /*Inicialização*/
     /*srand((unsigned)time(0));*/
     set_func_e_taref(funcionarios, tarefas);
+<<<<<<< HEAD
+=======
     imprime_status(funcionarios, tarefas);
+>>>>>>> d707f8ecd72b0da2a422d84bff35f337f97a8f16
     marca_reunioes(funcionarios, tarefas);
 
     reunioes_realizadas = trabalha(funcionarios, tarefas);
@@ -76,6 +84,8 @@ int ALEAT(int min, int max){
     return (rand() % (max + 1 - min)) + min;
 }
 
+<<<<<<< HEAD
+=======
 void imprime_status(func_t funcionarios[], taref_t tarefas[]){
     int i; 
     i = 0;
@@ -92,11 +102,12 @@ void imprime_status(func_t funcionarios[], taref_t tarefas[]){
     printf("\n");
 }
 
+>>>>>>> d707f8ecd72b0da2a422d84bff35f337f97a8f16
 /*função de inicialização aleatória de cada funcionario e tarefa*/
 void set_func_e_taref(func_t funcionarios[], taref_t tarefas[]){
     int i=0;
 
-    while (i<num_func){
+    while (i < num_func){
         funcionarios[i].lideranca = ALEAT(0,100);
         funcionarios[i].experiencia = ALEAT(20,100);
         if (!(funcionarios[i].agenda = cria_agenda())){
@@ -106,7 +117,7 @@ void set_func_e_taref(func_t funcionarios[], taref_t tarefas[]){
         i++;
     }
     i = 0;
-    while (i<num_taref){
+    while (i < num_taref){
         tarefas[i].tempo_conclusao = ALEAT(600,800);
         tarefas[i].dificuldade = ALEAT(30,80);
         i++;
@@ -180,7 +191,6 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
             else if (flag == -1){
                 printf("\tLIDER INDISPONIVEL");
                 desmarca_compromisso_agenda(funcionarios[i_lider].agenda, dia, compr_lider);
-                destroi_descricao_compromisso(compr_lider);
                 destroi_compromisso(compr_lider);
             }
 
@@ -203,7 +213,6 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
                         case -1:
                             printf("IN");
                             desmarca_compromisso_agenda(funcionarios[i_func].agenda, dia, compr_func);
-                            destroi_descricao_compromisso(compr_func);
                             destroi_compromisso(compr_func);
                             break;
                         
@@ -226,7 +235,6 @@ void marca_reunioes(func_t funcionarios[], taref_t tarefas[]){
                     printf(" VAZIA");
                     if (!desmarca_compromisso_agenda(funcionarios[i_lider].agenda, dia, compr_lider))
                         printf("not found - lider func vazia\n");
-                    destroi_descricao_compromisso(compr_lider);
                     destroi_compromisso(compr_lider);
                 }
             }      
@@ -314,7 +322,6 @@ int trabalha(func_t funcionarios[], taref_t tarefas[]){
                     funcionarios[func].experiencia++;
 
                 desmarca_compromisso_agenda(funcionarios[func].agenda, dia, compr);
-                destroi_descricao_compromisso(compr);
                 destroi_compromisso(compr);
                 func = encontra_menor_compr(funcionarios, dia);
             }
@@ -323,7 +330,7 @@ int trabalha(func_t funcionarios[], taref_t tarefas[]){
 
         i = 0;
         /*acerta todas as agendas para o proximo mes*/
-        while (i<num_func){
+        while (i < num_func){
             prox_mes_agenda(funcionarios[i].agenda);
             i++;    
         }

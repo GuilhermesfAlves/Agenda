@@ -50,19 +50,12 @@ compromisso_t* cria_compromisso (horario_compromisso_t hc, int id,  char* descri
     return compr;
 }
 
-/* destroi a descricao de um compromisso */
-void destroi_descricao_compromisso(compromisso_t* compr){
-
-    if (compr)
-        if (compr -> descricao)
-            free(compr -> descricao);
-}
-
 /* destroi um compromisso */
 void destroi_compromisso(compromisso_t* compr){
     compromisso_t *aux_compr;
 
     aux_compr = compr -> prox;
+    free(compr -> descricao);
     free(compr);
     compr = aux_compr;
 }
@@ -85,7 +78,6 @@ void destroi_agenda(agenda_t* agenda){
         
             while (aux_compr){
                 desmarca_compromisso_agenda(agenda, aux_dia -> dia, aux_compr);
-                destroi_descricao_compromisso(aux_compr);
                 destroi_compromisso(aux_compr);
                 aux_compr = prox_compr(aux_compr);
             }
@@ -170,9 +162,6 @@ int marca_compromisso_agenda(agenda_t* agenda, int dia, compromisso_t* compr){
             aux_compr = aux_dia -> comprs;
             while (aux_compr -> prox) {
                 if (aux_compr -> fim > aux_compr -> prox -> inicio){
-                    /*desmarca_compromisso_agenda(agenda, dia, aux_compr -> prox);
-                    destroi_descricao_compromisso(aux_compr -> prox);
-                    destroi_compromisso(aux_compr -> prox);*/
                     return -1;
                 }
                 aux_compr = aux_compr -> prox;    
